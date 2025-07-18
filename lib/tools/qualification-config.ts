@@ -170,7 +170,9 @@ const results: Record<ResultId, Result> = {
     description: `Votre produit <strong>n'est pas qualifié</strong> comme un Dispositif Médical Logiciel selon les critères du MDR 2017/745 et de la guidance MDCG 2019-11 v2.1.<br /><br />Votre logiciel n'est donc pas soumis aux exigences du règlement sur les dispositifs médicaux, mais peut être soumis à d'autres réglementations selon sa nature et son usage.`,
     variant: "destructive",
     recommendations: [
-      
+      "Si votre produit n'est pas un logiciel, il peut tout de même être un dispositif médical.",
+      "Regardez si la définition du votre produit se rapproche de la définition d'un dispositif médical.",
+      "Consultez un consultant QARA pour être sûr du résultat."
     ],
     nextSteps: [
       
