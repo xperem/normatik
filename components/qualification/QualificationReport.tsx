@@ -98,27 +98,41 @@ export function QualificationReport({ session, onBack }: QualificationReportProp
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="max-w-5xl mx-auto p-6 space-y-8"
+      className="max-w-5xl mx-auto p-4 sm:p-6 space-y-6 sm:space-y-8"
     >
-      {/* Header avec actions */}
-      <div className="flex items-center justify-between">
-        <Button variant="ghost" onClick={onBack} className="text-gray-600 hover:text-gray-900">
+      {/* Header avec actions - Version responsive */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <Button variant="ghost" onClick={onBack} className="text-gray-600 hover:text-gray-900 self-start">
           <ArrowLeft className="mr-2 h-4 w-4" />
           Retour à l&apos;évaluation
         </Button>
-        <div className="flex gap-3">
-          <Button variant="outline" onClick={handleDownloadJSON} className="shadow-sm">
+        
+        {/* Boutons d'export - Stack vertical sur mobile, horizontal sur desktop */}
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
+          <Button 
+            variant="outline" 
+            onClick={handleDownloadJSON} 
+            className="shadow-sm w-full sm:w-auto"
+          >
             <Download className="mr-2 h-4 w-4" />
-            Export JSON
+            <span className="sm:hidden">Télécharger JSON</span>
+            <span className="hidden sm:inline">Export JSON</span>
           </Button>
           <Button 
             variant="medical" 
             onClick={handleDownloadPDF} 
             disabled={isGeneratingPDF}
-            className="shadow-sm"
+            className="shadow-sm w-full sm:w-auto"
           >
             <Download className="mr-2 h-4 w-4" />
-            {isGeneratingPDF ? "Génération..." : "Export PDF"}
+            {isGeneratingPDF ? (
+              <span>Génération...</span>
+            ) : (
+              <>
+                <span className="sm:hidden">Télécharger PDF</span>
+                <span className="hidden sm:inline">Export PDF</span>
+              </>
+            )}
           </Button>
         </div>
       </div>
@@ -132,12 +146,12 @@ export function QualificationReport({ session, onBack }: QualificationReportProp
             </div>
             <div>
               <CardTitle className="text-lg text-gray-900">Informations de l&apos;évaluateur</CardTitle>
-              <CardDescription>Ces informations apparaîtront sur le rapport PDF</CardDescription>
+              <CardDescription className="text-sm">Ces informations apparaîtront sur le rapport PDF</CardDescription>
             </div>
           </div>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
                 <User className="h-4 w-4" />
@@ -181,7 +195,7 @@ export function QualificationReport({ session, onBack }: QualificationReportProp
       {/* Résumé exécutif */}
       <Card className="shadow-lg border-0">
         <CardHeader className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-t-lg">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div className="flex items-center gap-3">
               <div className={`p-3 rounded-full ${isQualified ? 'bg-green-100' : 'bg-red-100'}`}>
                 {isQualified ? (
@@ -191,7 +205,7 @@ export function QualificationReport({ session, onBack }: QualificationReportProp
                 )}
               </div>
               <div>
-                <CardTitle className="text-xl text-gray-900">Résultat de l&apos;évaluation</CardTitle>
+                <CardTitle className="text-lg sm:text-xl text-gray-900">Résultat de l&apos;évaluation</CardTitle>
                 <div className="flex items-center gap-2 mt-1">
                   <Calendar className="h-4 w-4 text-gray-500" />
                   <span className="text-sm text-gray-600">{formatDate(new Date())}</span>
@@ -200,7 +214,7 @@ export function QualificationReport({ session, onBack }: QualificationReportProp
             </div>
             <Badge 
               variant={isQualified ? "success" : "destructive"} 
-              className="text-base px-4 py-2 font-medium"
+              className="text-sm sm:text-base px-3 sm:px-4 py-1 sm:py-2 font-medium self-start sm:self-center"
             >
               {isQualified ? "Dispositif Médical" : "Non-Dispositif Médical"}
             </Badge>
@@ -211,7 +225,7 @@ export function QualificationReport({ session, onBack }: QualificationReportProp
             <div className="space-y-4">
               <div>
                 <h3 className="font-semibold text-gray-900 mb-2">Produit évalué</h3>
-                <p className="text-lg font-medium text-blue-600">{session.productName}</p>
+                <p className="text-lg font-medium text-blue-600 break-words">{session.productName}</p>
               </div>
               <div>
                 <h3 className="font-semibold text-gray-900 mb-2">Usage prévu</h3>
@@ -256,23 +270,23 @@ export function QualificationReport({ session, onBack }: QualificationReportProp
         <CardContent>
           <div className="space-y-6">
             {session.steps.map((step, index) => (
-              <div key={step.questionId} className="border-l-4 border-gray-200 pl-6 py-4">
-                <div className="flex items-start gap-4">
+              <div key={step.questionId} className="border-l-4 border-gray-200 pl-4 sm:pl-6 py-4">
+                <div className="flex items-start gap-3 sm:gap-4">
                   <div className="flex-shrink-0">
                     <div className="w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm font-semibold">
                       {index + 1}
                     </div>
                   </div>
-                  <div className="flex-1 space-y-3">
+                  <div className="flex-1 space-y-3 min-w-0">
                     <div>
-                      <h4 className="font-medium text-gray-900">
+                      <h4 className="font-medium text-gray-900 break-words">
                         <div dangerouslySetInnerHTML={{ __html: step.questionText }} />
                       </h4>
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
                       <Badge 
                         variant={step.answer.value === "yes" ? "success" : "destructive"}
-                        className="font-medium"
+                        className="font-medium self-start"
                       >
                         {step.answer.value === "yes" ? "✓ OUI" : "✗ NON"}
                       </Badge>
@@ -282,7 +296,7 @@ export function QualificationReport({ session, onBack }: QualificationReportProp
                     </div>
                     {step.answer.justification && (
                       <div className="bg-gray-50 p-3 rounded-lg border-l-2 border-gray-300">
-                        <p className="text-sm text-gray-700 italic">
+                        <p className="text-sm text-gray-700 italic break-words">
                           <strong>Justification :</strong> {step.answer.justification}
                         </p>
                       </div>
@@ -298,10 +312,10 @@ export function QualificationReport({ session, onBack }: QualificationReportProp
       {/* Footer */}
       <div className="text-center py-6 border-t border-gray-200">
         <p className="text-sm text-gray-500">
-          Rapport généré par {APP_NAME}  • Version 2.1 • {formatDate(new Date())}
+          Rapport généré par {APP_NAME} • Version 1 • {formatDate(new Date())}
         </p>
         <p className="text-xs text-gray-400 mt-1">
-          Conforme aux guidelines MDCG 2019-11 rev.1
+          Conforme aux guidelines MDCG 2019-11 rev.2.1
         </p>
       </div>
     </motion.div>
