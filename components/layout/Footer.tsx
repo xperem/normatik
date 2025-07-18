@@ -60,9 +60,8 @@ export function Footer() {
                 Outils modernes pour simplifier la conformité réglementaire des dispositifs médicaux.
               </p>
               <div className="flex items-center text-sm text-gray-400">
-                <span>Développé avec</span>
-                <Heart className="w-4 h-4 text-red-500 mx-1" fill="currentColor" />
-                <span>pour la communauté QARA</span>
+                <span>Développé par et pour la communauté QARA </span>
+                
               </div>
             </motion.div>
           </div>
@@ -114,8 +113,7 @@ export function Footer() {
                 <p className="text-yellow-200 font-medium mb-1">Avertissement Important</p>
                 <p className="text-yellow-100/80 leading-relaxed">
                   Ces outils sont fournis à titre informatif et d&apos;aide à la décision. Ils ne remplacent pas l&apos;expertise 
-                  d&apos;un professionnel qualifié en affaires réglementaires. Toute décision réglementaire doit être validée 
-                  par des experts compétents et les autorités appropriées.
+                  d&apos;un professionnel qualifié en affaires réglementaires.
                 </p>
               </div>
             </div>
