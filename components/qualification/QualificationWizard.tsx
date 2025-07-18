@@ -114,7 +114,7 @@ export function QualificationWizard() {
                   required
                 />
                 <p className="text-xs text-muted-foreground">
-                  Plus votre description est précise, plus l'évaluation sera pertinente.
+                  Plus votre description est précise, plus l&apos;évaluation sera pertinente.
                 </p>
               </div>
 
@@ -124,7 +124,7 @@ export function QualificationWizard() {
                 variant="medical"
                 disabled={!productName.trim() || !intendedUse.trim()}
               >
-                Démarrer l'évaluation
+                Démarrer l&apos;évaluation
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </form>
