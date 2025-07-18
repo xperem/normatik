@@ -104,7 +104,7 @@ export function QualificationReport({ session, onBack }: QualificationReportProp
       <div className="flex items-center justify-between">
         <Button variant="ghost" onClick={onBack} className="text-gray-600 hover:text-gray-900">
           <ArrowLeft className="mr-2 h-4 w-4" />
-          Retour à l'évaluation
+          Retour à l&apos;évaluation
         </Button>
         <div className="flex gap-3">
           <Button variant="outline" onClick={handleDownloadJSON} className="shadow-sm">
@@ -131,7 +131,7 @@ export function QualificationReport({ session, onBack }: QualificationReportProp
               <User className="h-5 w-5 text-white" />
             </div>
             <div>
-              <CardTitle className="text-lg text-gray-900">Informations de l'évaluateur</CardTitle>
+              <CardTitle className="text-lg text-gray-900">Informations de l&apos;évaluateur</CardTitle>
               <CardDescription>Ces informations apparaîtront sur le rapport PDF</CardDescription>
             </div>
           </div>
@@ -191,7 +191,7 @@ export function QualificationReport({ session, onBack }: QualificationReportProp
                 )}
               </div>
               <div>
-                <CardTitle className="text-xl text-gray-900">Résultat de l'évaluation</CardTitle>
+                <CardTitle className="text-xl text-gray-900">Résultat de l&apos;évaluation</CardTitle>
                 <div className="flex items-center gap-2 mt-1">
                   <Calendar className="h-4 w-4 text-gray-500" />
                   <span className="text-sm text-gray-600">{formatDate(new Date())}</span>
@@ -247,7 +247,7 @@ export function QualificationReport({ session, onBack }: QualificationReportProp
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <FileText className="h-5 w-5 text-blue-600" />
-            Détail de l'évaluation
+            Détail de l&apos;évaluation
           </CardTitle>
           <CardDescription>
             Questionnaire MDCG 2019-11 - {session.steps.length} questions répondues

@@ -187,7 +187,7 @@ export function ToolsGrid({ onToolSelect }: ToolsGridProps) {
             Outils QARA Disponibles
           </h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Une suite complète d'outils pour vous accompagner dans vos démarches réglementaires
+            Une suite complète d&apos;outils pour vous accompagner dans vos démarches réglementaires
           </p>
         </motion.div>
 

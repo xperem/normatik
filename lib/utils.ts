@@ -19,7 +19,7 @@ export function generateReportId(): string {
   return `QARA-${Date.now().toString(36).toUpperCase()}`;
 }
 
-export function downloadJSON(data: any, filename: string): void {
+export function downloadJSON(data: Record<string, unknown>, filename: string): void {
   const blob = new Blob([JSON.stringify(data, null, 2)], {
     type: "application/json",
   });

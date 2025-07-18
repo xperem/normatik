@@ -1,8 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Heart, ExternalLink, Mail, FileText, Shield } from "lucide-react";
-import { APP_NAME } from "@/lib/config"; // ✅ import du nom centralisé
+import { Heart, ExternalLink, Mail, Shield } from "lucide-react"; // ✅ FileText retiré
+import { APP_NAME } from "@/lib/config";
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
@@ -113,8 +113,8 @@ export function Footer() {
               <div className="text-sm">
                 <p className="text-yellow-200 font-medium mb-1">Avertissement Important</p>
                 <p className="text-yellow-100/80 leading-relaxed">
-                  Ces outils sont fournis à titre informatif et d'aide à la décision. Ils ne remplacent pas l'expertise 
-                  d'un professionnel qualifié en affaires réglementaires. Toute décision réglementaire doit être validée 
+                  Ces outils sont fournis à titre informatif et d&apos;aide à la décision. Ils ne remplacent pas l&apos;expertise 
+                  d&apos;un professionnel qualifié en affaires réglementaires. Toute décision réglementaire doit être validée 
                   par des experts compétents et les autorités appropriées.
                 </p>
               </div>
