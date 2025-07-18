@@ -59,27 +59,36 @@ export default function HomePage() {
             transition={{ duration: 0.3 }}
             className="min-h-screen"
           >
-            {/* Tool Header */}
+            {/* Tool Header - Responsive */}
             <div className="bg-white shadow-sm border-b sticky top-0 z-50">
-              <div className="max-w-7xl mx-auto px-6 py-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-4">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
+                  {/* Left section - Back button and title */}
+                  <div className="flex items-center space-x-2 sm:space-x-4 min-w-0">
                     <Button
                       variant="ghost"
                       onClick={handleBackToHome}
-                      className="text-gray-600 hover:text-gray-900"
+                      className="text-gray-600 hover:text-gray-900 shrink-0 text-sm sm:text-base px-2 sm:px-4"
                     >
-                      <ArrowLeft className="mr-2 h-4 w-4" />
-                      Retour aux outils
+                      <ArrowLeft className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+                      <span className="hidden xs:inline">Retour aux outils</span>
+                      <span className="xs:hidden">Retour</span>
                     </Button>
-                    <div className="h-6 w-px bg-gray-300" />
-                    <h1 className="text-xl font-semibold text-gray-900">
+                    <div className="h-4 sm:h-6 w-px bg-gray-300 shrink-0" />
+                    <h1 className="text-lg sm:text-xl font-semibold text-gray-900 truncate">
                       {selectedTool === "qualification"
-                        ? `Qualification - ${APP_NAME}`
+                        ? (
+                          <>
+                            <span className="hidden sm:inline">Qualification - {APP_NAME}</span>
+                            <span className="sm:hidden">Qualification</span>
+                          </>
+                        )
                         : APP_NAME}
                     </h1>
                   </div>
-                  <div className="text-sm text-gray-500">
+                  
+                  {/* Right section - Version info */}
+                  <div className="text-xs sm:text-sm text-gray-500 shrink-0 self-start sm:self-center">
                     MDCG 2019-11 v2.1
                   </div>
                 </div>
@@ -87,7 +96,7 @@ export default function HomePage() {
             </div>
 
             {/* Tool Content */}
-            <div className="py-8">
+            <div className="py-6 sm:py-8">
               {renderSelectedTool()}
             </div>
           </motion.div>

@@ -28,9 +28,12 @@ function ToolCard({ title, description, category, status, icon, features, onClic
       whileHover={{ y: -5 }}
       className="h-full"
     >
-      <Card className={`h-full glass-effect transition-all duration-300 hover:shadow-xl ${
-        isAvailable ? "cursor-pointer hover:border-blue-300" : "opacity-75"
-      }`}>
+      <Card 
+        className={`h-full glass-effect transition-all duration-300 hover:shadow-xl group ${
+          isAvailable ? "cursor-pointer hover:border-blue-300" : "opacity-75"
+        }`}
+        onClick={isAvailable ? onClick : undefined}
+      >
         <CardHeader className="pb-4">
           <div className="flex items-start justify-between mb-3">
             <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center text-white">
@@ -43,7 +46,11 @@ function ToolCard({ title, description, category, status, icon, features, onClic
               {status === "available" ? "Disponible" : status === "beta" ? "Bêta" : "Bientôt"}
             </Badge>
           </div>
-          <CardTitle className="text-xl mb-2">{title}</CardTitle>
+          <CardTitle className={`text-xl mb-2 transition-colors ${
+            isAvailable ? "group-hover:text-blue-600" : ""
+          }`}>
+            {title}
+          </CardTitle>
           <CardDescription className="text-sm text-muted-foreground">
             {description}
           </CardDescription>
@@ -67,10 +74,11 @@ function ToolCard({ title, description, category, status, icon, features, onClic
             </div>
             
             <Button
-              onClick={onClick}
               disabled={!isAvailable}
               variant={isAvailable ? "default" : "secondary"}
-              className="w-full mt-4"
+              className={`w-full mt-4 pointer-events-none ${
+                isAvailable ? "opacity-0 group-hover:opacity-100 transition-opacity" : ""
+              }`}
             >
               {isAvailable ? "Utiliser l'outil" : "Bientôt disponible"}
               {isAvailable && <ArrowRight className="ml-2 h-4 w-4" />}
@@ -166,7 +174,7 @@ export function ToolsGrid({ onToolSelect }: ToolsGridProps) {
       status: "coming-soon" as const,
       icon: <Clock className="w-6 h-6" />,
       features: [
-        "Critères MDCG 2020-3",
+        "NBOG",
         "Arbre de décision",
         "Impact réglementaire",
         "Plan d'action"
@@ -201,11 +209,7 @@ export function ToolsGrid({ onToolSelect }: ToolsGridProps) {
               status={tool.status}
               icon={tool.icon}
               features={tool.features}
-              onClick={() => {
-                if (tool.status === "available") {
-                  onToolSelect(tool.id);
-                }
-              }}
+              onClick={() => onToolSelect(tool.id)}
               delay={index * 0.1}
             />
           ))}
