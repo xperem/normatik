@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowLeft, ArrowRight, FileText, HelpCircle, CheckCircle, XCircle, Download } from "lucide-react";
+import { ArrowLeft, ArrowRight, FileText, HelpCircle, CheckCircle, XCircle, Download, Info, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -74,7 +74,7 @@ export function QualificationWizard() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
+    <div className="max-w-4xl mx-auto p-4 md:p-6">
       {/* Formulaire initial */}
       {!session && (
         <Card className="shadow-lg">
@@ -149,59 +149,101 @@ export function QualificationWizard() {
 
           <Card className="shadow-lg">
             <CardHeader>
-              <CardTitle className="text-xl">
+              <CardTitle className="text-lg md:text-xl leading-relaxed">
                 <div dangerouslySetInnerHTML={{ __html: currentQuestion.text }} />
               </CardTitle>
+              
+              {/* Bouton d'aide amélioré */}
               {currentQuestion.hint && (
-                <div className="mt-4">
+                <div className="mt-6">
                   <Button
-                    variant="ghost"
+                    variant={showHint ? "default" : "outline"}
                     size="sm"
                     onClick={() => setShowHint(!showHint)}
-                    className="text-blue-600 hover:text-blue-700"
+                    className={`
+                      transition-all duration-200 font-medium
+                      ${showHint 
+                        ? "bg-blue-600 hover:bg-blue-700 text-white shadow-md" 
+                        : "border-blue-200 text-blue-700 hover:border-blue-300 hover:bg-blue-50"
+                      }
+                    `}
                   >
                     <HelpCircle className="mr-2 h-4 w-4" />
-                    {showHint ? "Masquer l'aide" : "Afficher l'aide"}
+                    {showHint ? "Masquer l'aide" : "Besoin d'aide ?"}
                   </Button>
                 </div>
               )}
             </CardHeader>
 
             <CardContent className="space-y-6">
+              {/* Zone d'aide améliorée */}
               {showHint && currentQuestion.hint && (
-                <Alert variant="info">
-                  <HelpCircle className="h-4 w-4" />
-                  <AlertTitle>Aide à la décision</AlertTitle>
-                  <AlertDescription>
-                    <div dangerouslySetInnerHTML={{ __html: currentQuestion.hint }} />
-                  </AlertDescription>
-                </Alert>
+                <div className="animate-in slide-in-from-top-2 duration-300">
+                  <Alert className="border-2 border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50 shadow-sm">
+                    <div className="flex items-center mb-2">
+                      <div className="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                        <Info className="h-4 w-4 text-blue-600" />
+                      </div>
+                      <AlertTitle className="text-blue-900 font-semibold text-base">
+                        Aide à la décision
+                      </AlertTitle>
+                    </div>
+                    <AlertDescription className="text-blue-800 leading-relaxed ml-11">
+                      <div 
+                        className="prose prose-sm max-w-none
+                          prose-strong:text-blue-900 prose-strong:font-semibold
+                          prose-ul:space-y-1 prose-li:text-blue-800
+                          prose-em:text-blue-700 prose-em:italic"
+                        dangerouslySetInnerHTML={{ __html: currentQuestion.hint }} 
+                      />
+                    </AlertDescription>
+                  </Alert>
+                </div>
               )}
 
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-6">
+                {/* Boutons de réponse améliorés */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <Button
-                    variant={selectedAnswer === "yes" ? "success" : "outline"}
+                    variant={selectedAnswer === "yes" ? "default" : "outline"}
                     size="lg"
                     onClick={() => setSelectedAnswer("yes")}
-                    className="h-16 text-lg"
+                    className={`
+                      h-16 text-lg font-medium transition-all duration-200 group
+                      ${selectedAnswer === "yes" 
+                        ? "bg-green-600 hover:bg-green-700 text-white shadow-lg scale-105" 
+                        : "border-2 border-green-200 text-green-700 hover:border-green-300 hover:bg-green-50"
+                      }
+                    `}
                   >
-                    <CheckCircle className="mr-2 h-5 w-5" />
+                    <CheckCircle className={`mr-3 h-5 w-5 transition-transform group-hover:scale-110 ${
+                      selectedAnswer === "yes" ? "text-white" : "text-green-600"
+                    }`} />
                     Oui
                   </Button>
                   <Button
-                    variant={selectedAnswer === "no" ? "destructive" : "outline"}
+                    variant={selectedAnswer === "no" ? "default" : "outline"}
                     size="lg"
                     onClick={() => setSelectedAnswer("no")}
-                    className="h-16 text-lg"
+                    className={`
+                      h-16 text-lg font-medium transition-all duration-200 group
+                      ${selectedAnswer === "no" 
+                        ? "bg-red-600 hover:bg-red-700 text-white shadow-lg scale-105" 
+                        : "border-2 border-red-200 text-red-700 hover:border-red-300 hover:bg-red-50"
+                      }
+                    `}
                   >
-                    <XCircle className="mr-2 h-5 w-5" />
+                    <XCircle className={`mr-3 h-5 w-5 transition-transform group-hover:scale-110 ${
+                      selectedAnswer === "no" ? "text-white" : "text-red-600"
+                    }`} />
                     Non
                   </Button>
                 </div>
 
-                <div className="space-y-2">
-                  <label htmlFor="justification" className="text-sm font-medium">
+                {/* Zone de justification */}
+                <div className="space-y-3">
+                  <label htmlFor="justification" className="text-sm font-medium flex items-center">
+                    <FileText className="mr-2 h-4 w-4 text-gray-500" />
                     Justification (optionnelle)
                   </label>
                   <Textarea
@@ -210,15 +252,18 @@ export function QualificationWizard() {
                     onChange={(e) => setJustification(e.target.value)}
                     placeholder="Expliquez votre réponse pour documenter votre évaluation..."
                     rows={3}
+                    className="resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
               </div>
 
-              <div className="flex justify-between pt-4">
+              {/* Navigation */}
+              <div className="flex flex-col sm:flex-row justify-between gap-4 pt-4 border-t">
                 <Button
                   variant="ghost"
                   onClick={goBack}
                   disabled={!canGoBack}
+                  className="sm:w-auto w-full"
                 >
                   <ArrowLeft className="mr-2 h-4 w-4" />
                   Précédent
@@ -228,6 +273,7 @@ export function QualificationWizard() {
                   onClick={handleAnswer}
                   disabled={!selectedAnswer}
                   variant="medical"
+                  className="sm:w-auto w-full"
                 >
                   Continuer
                   <ArrowRight className="ml-2 h-4 w-4" />
