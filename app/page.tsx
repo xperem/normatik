@@ -8,6 +8,7 @@ import { Header } from "@/components/layout/Header";
 import { ToolsGrid } from "@/components/layout/ToolsGrid";
 import { Footer } from "@/components/layout/Footer";
 import { QualificationWizard } from "@/components/qualification/QualificationWizard";
+import { RegulatoryWizard } from "@/components/regulatory/regulatoryWizard";
 import { APP_NAME } from "@/lib/config";
 
 export default function HomePage() {
@@ -25,10 +26,46 @@ export default function HomePage() {
     switch (selectedTool) {
       case "qualification":
         return <QualificationWizard />;
+      case "dm-dmdiv":
+        return <RegulatoryWizard />;
       default:
         return null;
     }
   };
+
+  const getToolTitle = () => {
+    switch (selectedTool) {
+      case "qualification":
+        return {
+          full: `Qualification - ${APP_NAME}`,
+          short: "Qualification"
+        };
+      case "dm-dmdiv":
+        return {
+          full: `DM ou DMDIV - ${APP_NAME}`,
+          short: "DM ou DMDIV"
+        };
+      default:
+        return {
+          full: APP_NAME,
+          short: APP_NAME
+        };
+    }
+  };
+
+  const getToolVersion = () => {
+    switch (selectedTool) {
+      case "qualification":
+        return "MDCG 2019-11 v2.1";
+      case "dm-dmdiv":
+        return "MDCG 2019-11 Figure 2";
+      default:
+        return "";
+    }
+  };
+
+  const toolTitle = getToolTitle();
+  const toolVersion = getToolVersion();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
@@ -76,21 +113,17 @@ export default function HomePage() {
                     </Button>
                     <div className="h-4 sm:h-6 w-px bg-gray-300 shrink-0" />
                     <h1 className="text-lg sm:text-xl font-semibold text-gray-900 truncate">
-                      {selectedTool === "qualification"
-                        ? (
-                          <>
-                            <span className="hidden sm:inline">Qualification - {APP_NAME}</span>
-                            <span className="sm:hidden">Qualification</span>
-                          </>
-                        )
-                        : APP_NAME}
+                      <span className="hidden sm:inline">{toolTitle.full}</span>
+                      <span className="sm:hidden">{toolTitle.short}</span>
                     </h1>
                   </div>
                   
                   {/* Right section - Version info */}
-                  <div className="text-xs sm:text-sm text-gray-500 shrink-0 self-start sm:self-center">
-                    MDCG 2019-11 v2.1
-                  </div>
+                  {toolVersion && (
+                    <div className="text-xs sm:text-sm text-gray-500 shrink-0 self-start sm:self-center">
+                      {toolVersion}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

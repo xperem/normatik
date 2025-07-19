@@ -115,7 +115,7 @@ export function ToolsGrid({ onToolSelect }: ToolsGridProps) {
       title: "DM ou DMDIV ?",
       description: "Déterminez si votre dispositif relève du MDR (DM) ou IVDR (DMDIV)",
       category: "Qualification",
-      status: "coming-soon" as const,
+      status: "available" as const,
       icon: <BarChart3 className="w-6 h-6" />,
       features: [
         "Questionnaire de différenciation",
