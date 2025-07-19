@@ -10,6 +10,7 @@ import { Footer } from "@/components/layout/Footer";
 import { QualificationWizard } from "@/components/qualification/QualificationWizard";
 import { RegulatoryWizard } from "@/components/regulatory/regulatoryWizard";
 import { ClassificationDmWizard } from "@/components/classificationDm/ClassificationDmWizard";
+import { ClassificationDmdivWizard } from "@/components/classificationDmdiv/ClassificationDmDivWizard";
 import { APP_NAME } from "@/lib/config";
 
 export default function HomePage() {
@@ -31,6 +32,8 @@ export default function HomePage() {
         return <RegulatoryWizard />;
       case "classificationDm":
         return <ClassificationDmWizard />;
+      case "classificationDmdiv":
+        return <ClassificationDmdivWizard />;
       default:
         return null;
     }
@@ -53,6 +56,11 @@ export default function HomePage() {
           full: `Classification DM - ${APP_NAME}`,
           short: "Classification DM"
         };
+      case "classificationDmdiv":
+        return {
+          full: `Classification DMDIV - ${APP_NAME}`,
+          short: "Classification DMDIV"
+        };
       default:
         return {
           full: APP_NAME,
@@ -69,6 +77,8 @@ export default function HomePage() {
         return "MDCG 2019-11 rev.2.1 Figure 2";
       case "classificationDm":
         return "MDR 2017/745 Règle 11";
+      case "classificationDmdiv":
+        return "IVDR 2017/746 Règles 1-7";
       default:
         return "";
     }

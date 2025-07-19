@@ -139,11 +139,11 @@ export function ToolsGrid({ onToolSelect }: ToolsGridProps) {
       ]
     },
     {
-      id: "classification-dmdiv",
+      id: "classificationDmdiv",
       title: "Classification DMDIV",
       description: "Classifiez votre dispositif médical de diagnostic in vitro selon l'IVDR",
       category: "Classification",
-      status: "coming-soon" as const,
+      status: "available" as const,
       icon: <FileText className="w-6 h-6" />,
       features: [
         "Règles de classification IVDR",

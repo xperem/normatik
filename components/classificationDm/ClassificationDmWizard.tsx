@@ -6,7 +6,7 @@ import { ToolWizard, ToolWizardConfig } from "../tools/ToolWizard";
 import { ToolReport, ToolReportConfig } from "../tools/ToolReport";
 import { useClassification } from "@/hooks/useClassificationDm";
 import { classificationConfig } from "@/lib/tools/classificationDm";
-import { CLASSIFICATION_THEME } from "@/lib/pdf/PDFGenerator";
+import { CLASSIFICATION_DM_THEME } from "@/lib/pdf/PDFGenerator";
 import { ClassificationSession } from "@/types/classificationDm";
 
 const wizardConfig: ToolWizardConfig = {
@@ -60,7 +60,7 @@ export function ClassificationDmWizard() {
       <ToolReport 
         session={currentSession}
         config={reportConfig}
-        pdfTheme={CLASSIFICATION_THEME}
+        pdfTheme={CLASSIFICATION_DM_THEME}
         onBack={handleBackToWizard}
       />
     );
