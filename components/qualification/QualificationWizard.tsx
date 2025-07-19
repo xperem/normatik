@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Info } from "lucide-react";
-import { ToolWizard, ToolWizardConfig } from "../tools/toolWizard";
+import { ToolWizard, ToolWizardConfig } from "../tools/ToolWizard";
 import { ToolReport, ToolReportConfig } from "../tools/ToolReport";
 import { useQualification } from "@/hooks/useQualification";
 import { qualificationConfig } from "@/lib/tools/qualification";

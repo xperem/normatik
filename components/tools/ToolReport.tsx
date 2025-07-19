@@ -161,10 +161,10 @@ export function ToolReport<
       </div>
 
       {/* Informations évaluateur */}
-      <Card className={`shadow-lg border-0 bg-gradient-to-r from-${config.theme.primary}-50 to-${config.theme.accent}-50`}>
+      <Card className="shadow-lg border-0 bg-gradient-to-r from-blue-50 to-cyan-50">
         <CardHeader className="pb-4">
           <div className="flex items-center gap-3">
-            <div className={`p-2 bg-${config.theme.primary}-500 rounded-lg`}>
+            <div className="p-2 bg-blue-500 rounded-lg">
               <User className="h-5 w-5 text-white" />
             </div>
             <div>
@@ -248,7 +248,7 @@ export function ToolReport<
             <div className="space-y-4">
               <div>
                 <h3 className="font-semibold text-gray-900 mb-2">{config.productLabel}</h3>
-                <p className={`text-lg font-medium text-${config.theme.primary}-600 break-words`}>{session.productName}</p>
+                <p className="text-lg font-medium text-blue-600 break-words">{session.productName}</p>
               </div>
               <div>
                 <h3 className="font-semibold text-gray-900 mb-2">Usage prévu</h3>
@@ -268,11 +268,11 @@ export function ToolReport<
                 </AlertDescription>
               </Alert>
               
-              <div className={`p-4 rounded-lg border-l-4 border-${config.theme.primary}-400 bg-${config.theme.primary}-50`}>
-                <h4 className={`font-medium mb-2 text-${config.theme.primary}-900`}>
+              <div className="p-4 rounded-lg border-l-4 border-blue-400 bg-blue-50">
+                <h4 className="font-medium mb-2 text-blue-900">
                   Réglementation applicable
                 </h4>
-                <p className={`text-sm text-${config.theme.primary}-800`}>
+                <p className="text-sm text-blue-800">
                   {config.regulation}
                 </p>
               </div>
@@ -285,7 +285,7 @@ export function ToolReport<
       <Card className="shadow-lg border-0">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <FileText className={`h-5 w-5 text-${config.theme.primary}-600`} />
+            <FileText className="h-5 w-5 text-blue-600" />
             Détail de l&apos;évaluation
           </CardTitle>
           <CardDescription>
@@ -298,7 +298,7 @@ export function ToolReport<
               <div key={step.questionId} className="border-l-4 border-gray-200 pl-4 sm:pl-6 py-4">
                 <div className="flex items-start gap-3 sm:gap-4">
                   <div className="flex-shrink-0">
-                    <div className={`w-8 h-8 bg-${config.theme.primary}-100 text-${config.theme.primary}-600 rounded-full flex items-center justify-center text-sm font-semibold`}>
+                    <div className="w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm font-semibold">
                       {index + 1}
                     </div>
                   </div>
