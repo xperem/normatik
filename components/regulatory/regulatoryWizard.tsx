@@ -17,7 +17,7 @@ const wizardConfig: ToolWizardConfig = {
   usageHint: "Précisez notamment le type d'informations fournies (diagnostiques, préventives, etc.).",
   contextAlert: {
     title: "Contexte réglementaire",
-    description: "Cet outil utilise la Figure 2 du MDCG 2019-11 pour différencier les dispositifs relevant du MDR (dispositifs médicaux classiques) de ceux relevant de l'IVDR (dispositifs de diagnostic in vitro).",
+    description: "Cet outil utilise la Figure 2 du MDCG 2019-11 rev.2.1 pour différencier les dispositifs relevant du MDR (dispositifs médicaux classiques) de ceux relevant de l'IVDR (dispositifs de diagnostic in vitro).",
     icon: <Info className="h-4 w-4 text-blue-600" />
   },
   theme: {

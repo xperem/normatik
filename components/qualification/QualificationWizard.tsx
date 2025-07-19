@@ -31,7 +31,7 @@ const reportConfig: ToolReportConfig = {
     accent: "cyan",
     gradient: "from-blue-600 to-cyan-600"
   },
-  regulation: "MDR 2017/745 • MDCG 2019-11 v2.1",
+  regulation: "MDR 2017/745 • MDCG 2019-11 rev.2.1",
   toolVersion: "2.1",
   positiveResultIds: ["MEDICAL_DEVICE"]
 };

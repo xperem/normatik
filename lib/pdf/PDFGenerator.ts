@@ -35,8 +35,8 @@ export const QUALIFICATION_THEME: PDFTheme = {
   reportTitle: 'Rapport de Qualification',
   reportSubtitle: 'Évaluation de dispositif médical logiciel',
   productLabel: 'Nom du produit',
-  regulationBadge: '📜 MDR 2017/745 • MDCG 2019-11 v2.1',
-  footerText: 'Conforme aux guidelines MDCG 2019-11 rev.1',
+  regulationBadge: '📜 MDR 2017/745 • MDCG 2019-11 rev.2.1',
+  footerText: 'Conforme aux guidelines MDCG 2019-11 rev.2.1',
   getResultColors: (result) => result.id === "MEDICAL_DEVICE" ? {
     background: '#f0fdf4',
     border: '#22c55e',
@@ -58,8 +58,8 @@ export const REGULATORY_THEME: PDFTheme = {
   reportTitle: 'Rapport de Qualification Réglementaire',
   reportSubtitle: 'Évaluation MDR vs IVDR',
   productLabel: 'Nom du dispositif',
-  regulationBadge: '📋 MDR 2017/745 • 🧪 IVDR 2017/746 • MDCG 2019-11 Figure 2',
-  footerText: 'Conforme aux guidelines MDCG 2019-11 rev.1 - Figure 2',
+  regulationBadge: '📋 MDR 2017/745 • 🧪 IVDR 2017/746 • MDCG 2019-11 rev.2.1 Figure 2',
+  footerText: 'Conforme aux guidelines MDCG 2019-11 rev.2.1 - Figure 2',
   getResultColors: (result) => result.id === "MDR" ? {
     background: '#eef2ff',
     border: '#4f46e5',
