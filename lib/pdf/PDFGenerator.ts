@@ -539,3 +539,58 @@ export class PDFGenerator {
     `;
   }
 }
+
+
+export const CLASSIFICATION_THEME: PDFTheme = {
+  primaryColor: '#059669',
+  secondaryColor: '#10b981',
+  icon: '📊',
+  resultIcon: (isPositive) => {
+    // Pour la classification, on utilise des icônes spécifiques par classe
+    return '📊';
+  },
+  reportTitle: 'Rapport de Classification',
+  reportSubtitle: 'Classification selon la règle 11 du MDR',
+  productLabel: 'Logiciel médical',
+  regulationBadge: '📊 MDR 2017/745 • MDCG 2019-11 rev.2.1 - Règle 11',
+  footerText: 'Conforme à la règle 11 du MDR 2017/745',
+  getResultColors: (result) => {
+    switch (result.id) {
+      case "CLASS_I":
+        return {
+          background: '#f3f4f6',
+          border: '#6b7280',
+          text: '#374151',
+          gradient: 'linear-gradient(90deg, #6b7280, #4b5563)'
+        };
+      case "CLASS_IIA":
+        return {
+          background: '#dbeafe',
+          border: '#3b82f6',
+          text: '#1e40af',
+          gradient: 'linear-gradient(90deg, #3b82f6, #1e40af)'
+        };
+      case "CLASS_IIB":
+        return {
+          background: '#fed7aa',
+          border: '#f97316',
+          text: '#c2410c',
+          gradient: 'linear-gradient(90deg, #f97316, #c2410c)'
+        };
+      case "CLASS_III":
+        return {
+          background: '#fee2e2',
+          border: '#ef4444',
+          text: '#dc2626',
+          gradient: 'linear-gradient(90deg, #ef4444, #dc2626)'
+        };
+      default:
+        return {
+          background: '#f0fdf4',
+          border: '#22c55e',
+          text: '#15803d',
+          gradient: 'linear-gradient(90deg, #22c55e, #16a34a)'
+        };
+    }
+  }
+};

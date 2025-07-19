@@ -9,6 +9,7 @@ import { ToolsGrid } from "@/components/layout/ToolsGrid";
 import { Footer } from "@/components/layout/Footer";
 import { QualificationWizard } from "@/components/qualification/QualificationWizard";
 import { RegulatoryWizard } from "@/components/regulatory/regulatoryWizard";
+import { ClassificationDmWizard } from "@/components/classificationDm/ClassificationDmWizard";
 import { APP_NAME } from "@/lib/config";
 
 export default function HomePage() {
@@ -28,6 +29,8 @@ export default function HomePage() {
         return <QualificationWizard />;
       case "dm-dmdiv":
         return <RegulatoryWizard />;
+      case "classificationDm":
+        return <ClassificationDmWizard />;
       default:
         return null;
     }
@@ -45,6 +48,11 @@ export default function HomePage() {
           full: `DM ou DMDIV - ${APP_NAME}`,
           short: "DM ou DMDIV"
         };
+      case "classificationDm":
+        return {
+          full: `Classification DM - ${APP_NAME}`,
+          short: "Classification DM"
+        };
       default:
         return {
           full: APP_NAME,
@@ -59,6 +67,8 @@ export default function HomePage() {
         return "MDCG 2019-11 rev.2.1";
       case "dm-dmdiv":
         return "MDCG 2019-11 rev.2.1 Figure 2";
+      case "classificationDm":
+        return "MDR 2017/745 Règle 11";
       default:
         return "";
     }

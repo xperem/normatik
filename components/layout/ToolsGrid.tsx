@@ -125,11 +125,11 @@ export function ToolsGrid({ onToolSelect }: ToolsGridProps) {
       ]
     },
     {
-      id: "classification-dm",
+      id: "classificationDm",
       title: "Classification DM",
       description: "Classifiez votre dispositif médical selon les règles du MDR",
       category: "Classification",
-      status: "coming-soon" as const,
+      status: "available" as const,
       icon: <Shield className="w-6 h-6" />,
       features: [
         "Règles de classification MDR",
