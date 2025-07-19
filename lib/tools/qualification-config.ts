@@ -7,6 +7,21 @@ const questions: Record<QuestionId, Question> = {
     id: "Q1",
     text: "Le produit est-il un <strong>logiciel</strong> ?",
     hint: `
+      <style>
+        .hint-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        @media (max-width: 768px) { 
+          .hint-grid { grid-template-columns: 1fr; gap: 12px; }
+        }
+        .hint-card { border-radius: 8px; padding: 16px; }
+        @media (max-width: 768px) { 
+          .hint-card { padding: 12px; }
+        }
+        .hint-list { margin: 0; padding-left: 0; list-style: none; }
+        .hint-list-item { display: flex; align-items: flex-start; margin-bottom: 8px; }
+        .hint-list-item:last-child { margin-bottom: 0; }
+        .hint-bullet { margin-right: 8px; margin-top: 2px; flex-shrink: 0; }
+      </style>
+      
       <div style="margin-bottom: 24px;">
         <div style="background: #dbeafe; border-left: 4px solid #3b82f6; padding: 16px; border-radius: 8px; margin-bottom: 16px;">
           <h4 style="font-weight: 600; color: #1e40af; margin-bottom: 8px;">📋 Définition officielle</h4>
@@ -16,50 +31,50 @@ const questions: Record<QuestionId, Question> = {
           </p>
         </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-          <div style="background: #dcfce7; border-left: 4px solid #22c55e; padding: 16px; border-radius: 8px;">
+        <div class="hint-grid">
+          <div class="hint-card" style="background: #dcfce7; border-left: 4px solid #22c55e;">
             <h4 style="font-weight: 600; color: #15803d; margin-bottom: 12px;">
               ✅ Inclut
             </h4>
-            <ul style="margin: 0; padding-left: 0; list-style: none;">
-              <li style="color: #15803d; margin-bottom: 8px; display: flex; align-items: flex-start;">
-                <span style="margin-right: 8px; margin-top: 2px;">•</span>
+            <ul class="hint-list">
+              <li class="hint-list-item" style="color: #15803d;">
+                <span class="hint-bullet">•</span>
                 <span>Applications mobiles (iOS, Android)</span>
               </li>
-              <li style="color: #15803d; margin-bottom: 8px; display: flex; align-items: flex-start;">
-                <span style="margin-right: 8px; margin-top: 2px;">•</span>
+              <li class="hint-list-item" style="color: #15803d;">
+                <span class="hint-bullet">•</span>
                 <span>Applications web et SaaS</span>
               </li>
-              <li style="color: #15803d; margin-bottom: 8px; display: flex; align-items: flex-start;">
-                <span style="margin-right: 8px; margin-top: 2px;">•</span>
+              <li class="hint-list-item" style="color: #15803d;">
+                <span class="hint-bullet">•</span>
                 <span>Logiciels embarqués</span>
               </li>
-              <li style="color: #15803d; margin-bottom: 8px; display: flex; align-items: flex-start;">
-                <span style="margin-right: 8px; margin-top: 2px;">•</span>
+              <li class="hint-list-item" style="color: #15803d;">
+                <span class="hint-bullet">•</span>
                 <span>Applications de bureau</span>
               </li>
-              <li style="color: #15803d; margin-bottom: 0; display: flex; align-items: flex-start;">
-                <span style="margin-right: 8px; margin-top: 2px;">•</span>
+              <li class="hint-list-item" style="color: #15803d;">
+                <span class="hint-bullet">•</span>
                 <span>Scripts et algorithmes</span>
               </li>
             </ul>
           </div>
 
-          <div style="background: #fef2f2; border-left: 4px solid #ef4444; padding: 16px; border-radius: 8px;">
+          <div class="hint-card" style="background: #fef2f2; border-left: 4px solid #ef4444;">
             <h4 style="font-weight: 600; color: #dc2626; margin-bottom: 12px;">
               ❌ Exclut
             </h4>
-            <ul style="margin: 0; padding-left: 0; list-style: none;">
-              <li style="color: #dc2626; margin-bottom: 8px; display: flex; align-items: flex-start;">
-                <span style="margin-right: 8px; margin-top: 2px;">•</span>
+            <ul class="hint-list">
+              <li class="hint-list-item" style="color: #dc2626;">
+                <span class="hint-bullet">•</span>
                 <span>Dispositifs physiques sans composant logiciel</span>
               </li>
-              <li style="color: #dc2626; margin-bottom: 8px; display: flex; align-items: flex-start;">
-                <span style="margin-right: 8px; margin-top: 2px;">•</span>
+              <li class="hint-list-item" style="color: #dc2626;">
+                <span class="hint-bullet">•</span>
                 <span>Données pures (bases de données, fichiers)</span>
               </li>
-              <li style="color: #dc2626; margin-bottom: 0; display: flex; align-items: flex-start;">
-                <span style="margin-right: 8px; margin-top: 2px;">•</span>
+              <li class="hint-list-item" style="color: #dc2626;">
+                <span class="hint-bullet">•</span>
                 <span>Protocoles de communication</span>
               </li>
             </ul>
@@ -159,62 +174,101 @@ const questions: Record<QuestionId, Question> = {
     id: "Q3",
     text: "Le logiciel exécute-t-il une <strong>action sur les données</strong> différente du simple stockage, archivage, communication, compression ou recherche ?",
     hint: `
+      <style>
+        .action-item { 
+          background: white; 
+          padding: 12px; 
+          border-radius: 6px; 
+          display: flex; 
+          align-items: center; 
+          margin-bottom: 12px; 
+        }
+        .action-item:last-child { margin-bottom: 0; }
+        .action-label { 
+          width: 120px; 
+          font-weight: 500; 
+          flex-shrink: 0; 
+        }
+        @media (max-width: 768px) { 
+          .action-item { 
+            flex-direction: column; 
+            align-items: flex-start; 
+            padding: 16px; 
+          }
+          .action-label { 
+            width: auto; 
+            margin-bottom: 4px; 
+          }
+        }
+        .hint-section { 
+          border-radius: 8px; 
+          padding: 20px; 
+          margin-bottom: 24px; 
+        }
+        @media (max-width: 768px) { 
+          .hint-section { 
+            padding: 16px; 
+            margin-bottom: 16px; 
+          }
+        }
+      </style>
+      
       <div style="margin-bottom: 24px;">
-        <div style="background: #fef2f2; border-left: 4px solid #ef4444; padding: 20px; border-radius: 8px; margin-bottom: 24px;">
+        <div class="hint-section" style="background: #fef2f2; border-left: 4px solid #ef4444;">
           <h4 style="font-weight: 600; color: #dc2626; margin-bottom: 16px; font-size: 18px;">
             ❌ Actions NON qualifiantes (MDCG 2019-11, §3.2)
           </h4>
-          <div style="display: grid; gap: 12px;">
-            <div style="background: white; padding: 12px; border-radius: 6px; border-left: 2px solid #fca5a5; display: flex; align-items: center;">
-              <span style="width: 120px; color: #dc2626; font-weight: 500; flex-shrink: 0;">Stockage :</span>
+          <div>
+            <div class="action-item" style="border-left: 2px solid #fca5a5;">
+              <span class="action-label" style="color: #dc2626;">Stockage :</span>
               <span style="color: #991b1b;">sauvegarde de données sans traitement</span>
             </div>
-            <div style="background: white; padding: 12px; border-radius: 6px; border-left: 2px solid #fca5a5; display: flex; align-items: center;">
-              <span style="width: 120px; color: #dc2626; font-weight: 500; flex-shrink: 0;">Archivage :</span>
+            <div class="action-item" style="border-left: 2px solid #fca5a5;">
+              <span class="action-label" style="color: #dc2626;">Archivage :</span>
               <span style="color: #991b1b;">conservation à long terme</span>
             </div>
-            <div style="background: white; padding: 12px; border-radius: 6px; border-left: 2px solid #fca5a5; display: flex; align-items: center;">
-              <span style="width: 120px; color: #dc2626; font-weight: 500; flex-shrink: 0;">Communication :</span>
+            <div class="action-item" style="border-left: 2px solid #fca5a5;">
+              <span class="action-label" style="color: #dc2626;">Communication :</span>
               <span style="color: #991b1b;">transmission, transfert, routage</span>
             </div>
-            <div style="background: white; padding: 12px; border-radius: 6px; border-left: 2px solid #fca5a5; display: flex; align-items: center;">
-              <span style="width: 120px; color: #dc2626; font-weight: 500; flex-shrink: 0;">Compression :</span>
+            <div class="action-item" style="border-left: 2px solid #fca5a5;">
+              <span class="action-label" style="color: #dc2626;">Compression :</span>
               <span style="color: #991b1b;">réduction de taille sans interprétation</span>
             </div>
-            <div style="background: white; padding: 12px; border-radius: 6px; border-left: 2px solid #fca5a5; display: flex; align-items: center;">
-              <span style="width: 120px; color: #dc2626; font-weight: 500; flex-shrink: 0;">Recherche :</span>
+            <div class="action-item" style="border-left: 2px solid #fca5a5;">
+              <span class="action-label" style="color: #dc2626;">Recherche :</span>
               <span style="color: #991b1b;">requêtes, indexation simple</span>
             </div>
           </div>
         </div>
 
-        <div style="background: #dcfce7; border-left: 4px solid #22c55e; padding: 20px; border-radius: 8px; margin-bottom: 16px;">
+        <div class="hint-section" style="background: #dcfce7; border-left: 4px solid #22c55e;">
           <h4 style="font-weight: 600; color: #15803d; margin-bottom: 16px; font-size: 18px;">
             ✅ Actions qualifiantes (exemples)
           </h4>
-          <div style="display: grid; gap: 12px;">
-            <div style="background: white; padding: 12px; border-radius: 6px; border-left: 2px solid #86efac; display: flex; align-items: center;">
-              <span style="width: 120px; color: #15803d; font-weight: 500; flex-shrink: 0;">Analyse :</span>
+          <div>
+            <div class="action-item" style="border-left: 2px solid #86efac;">
+              <span class="action-label" style="color: #15803d;">Analyse :</span>
               <span style="color: #166534;">interprétation de données médicales</span>
             </div>
-            <div style="background: white; padding: 12px; border-radius: 6px; border-left: 2px solid #86efac; display: flex; align-items: center;">
-              <span style="width: 120px; color: #15803d; font-weight: 500; flex-shrink: 0;">Calcul :</span>
+            <div class="action-item" style="border-left: 2px solid #86efac;">
+              <span class="action-label" style="color: #15803d;">Calcul :</span>
               <span style="color: #166534;">algorithmes de diagnostic ou traitement</span>
             </div>
-            <div style="background: white; padding: 12px; border-radius: 6px; border-left: 2px solid #86efac; display: flex; align-items: center;">
-              <span style="width: 120px; color: #15803d; font-weight: 500; flex-shrink: 0;">Traitement :</span>
+            <div class="action-item" style="border-left: 2px solid #86efac;">
+              <span class="action-label" style="color: #15803d;">Traitement :</span>
               <span style="color: #166534;">amélioration, reconstruction d'images</span>
             </div>
-            <div style="background: white; padding: 12px; border-radius: 6px; border-left: 2px solid #86efac; display: flex; align-items: center;">
-              <span style="width: 120px; color: #15803d; font-weight: 500; flex-shrink: 0;">Aide :</span>
+            <div class="action-item" style="border-left: 2px solid #86efac;">
+              <span class="action-label" style="color: #15803d;">Aide :</span>
               <span style="color: #166534;">recommandations cliniques</span>
             </div>
-            <div style="background: white; padding: 12px; border-radius: 6px; border-left: 2px solid #86efac; display: flex; align-items: center;">
-              <span style="width: 120px; color: #15803d; font-weight: 500; flex-shrink: 0;">Monitoring :</span>
+            <div class="action-item" style="border-left: 2px solid #86efac;">
+              <span class="action-label" style="color: #15803d;">Monitoring :</span>
               <span style="color: #166534;">surveillance avec alertes</span>
             </div>
-            <div style="background: white; padding: 12px; border-radius: 6px; border-left: 2px solid #86efac; display: flex; align-items: center;">
-              <span style="width: 120px; color: #15803d; font-weight: 500; flex-shrink: 0;">Transformation :</span>
+            <div class="action-item" style="border-left: 2px solid #86efac;">
+              <span class="action-label" style="color: #15803d;">Transformation :</span>
               <span style="color: #166534;">conversion avec valeur ajoutée médicale</span>
             </div>
           </div>
@@ -410,7 +464,7 @@ const results: Record<ResultId, Result> = {
       "Préparation du dossier technique pour le marquage CE"
     ],
     references: [
-      "MDCG 2019-11 rev.2.1 - Guidance on Qualification and Classification of Software",
+      "MDCG 2019-11 rev.1 - Guidance on Qualification and Classification of Software",
     ]
   },
   NOT_MEDICAL_DEVICE: {
@@ -438,7 +492,7 @@ const results: Record<ResultId, Result> = {
     ],
     nextSteps: [],
     references: [
-      "MDCG 2019-11 rev.2.1 - Guidance on Qualification and Classification of Software",
+      "MDCG 2019-11 rev.1 - Guidance on Qualification and Classification of Software",
     ]
   },
 };
