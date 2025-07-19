@@ -85,7 +85,7 @@ export function RegulatoryWizard() {
               Informations sur le dispositif
             </CardTitle>
             <CardDescription>
-              Évaluons si votre dispositif relève du MDR ou de l'IVDR
+              Évaluons si votre dispositif relève du MDR ou de l&apos;IVDR
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -116,7 +116,7 @@ export function RegulatoryWizard() {
                   required
                 />
                 <p className="text-xs text-muted-foreground">
-                  Précisez notamment le type d'informations fournies (diagnostiques, préventives, etc.).
+                  Précisez notamment le type d&apos;informations fournies (diagnostiques, préventives, etc.).
                 </p>
               </div>
 
