@@ -11,6 +11,7 @@ import { QualificationWizard } from "@/components/qualification/QualificationWiz
 import { RegulatoryWizard } from "@/components/regulatory/regulatoryWizard";
 import { ClassificationDmWizard } from "@/components/classificationDm/ClassificationDmWizard";
 import { ClassificationDmdivWizard } from "@/components/classificationDmdiv/ClassificationDmDivWizard";
+import { SafetyClassificationWizard } from "@/components/classificationSafety/ClassificationSafetyWizard";
 import { APP_NAME } from "@/lib/config";
 
 export default function HomePage() {
@@ -34,6 +35,8 @@ export default function HomePage() {
         return <ClassificationDmWizard />;
       case "classificationDmdiv":
         return <ClassificationDmdivWizard />;
+      case "safetyClassification":
+        return <SafetyClassificationWizard />;
       default:
         return null;
     }
@@ -61,6 +64,11 @@ export default function HomePage() {
           full: `Classification DMDIV - ${APP_NAME}`,
           short: "Classification DMDIV"
         };
+      case "safetyClassification":
+        return {
+          full: `Classification Sécurité - ${APP_NAME}`,
+          short: "Classification Sécurité"
+        };
       default:
         return {
           full: APP_NAME,
@@ -79,6 +87,8 @@ export default function HomePage() {
         return "MDR 2017/745 Règle 11";
       case "classificationDmdiv":
         return "IVDR 2017/746 Règles 1-7";
+      case "safetyClassification":
+        return "IEC 62304:2006+A1:2015 §4.3";
       default:
         return "";
     }

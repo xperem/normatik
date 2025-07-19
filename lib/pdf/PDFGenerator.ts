@@ -73,6 +73,161 @@ export const REGULATORY_THEME: PDFTheme = {
   }
 };
 
+export const CLASSIFICATION_DM_THEME: PDFTheme = {
+  primaryColor: '#059669',
+  secondaryColor: '#10b981',
+  icon: '📊',
+  resultIcon: (isPositive) => {
+    // Pour la classification, on utilise des icônes spécifiques par classe
+    return '📊';
+  },
+  reportTitle: 'Rapport de Classification',
+  reportSubtitle: 'Classification selon la règle 11 du MDR',
+  productLabel: 'Logiciel médical',
+  regulationBadge: '📊 MDR 2017/745 • MDCG 2019-11 rev.2.1 - Règle 11',
+  footerText: 'Conforme à la règle 11 du MDR 2017/745',
+  getResultColors: (result) => {
+    switch (result.id) {
+      case "CLASS_I":
+        return {
+          background: '#f3f4f6',
+          border: '#6b7280',
+          text: '#374151',
+          gradient: 'linear-gradient(90deg, #6b7280, #4b5563)'
+        };
+      case "CLASS_IIA":
+        return {
+          background: '#dbeafe',
+          border: '#3b82f6',
+          text: '#1e40af',
+          gradient: 'linear-gradient(90deg, #3b82f6, #1e40af)'
+        };
+      case "CLASS_IIB":
+        return {
+          background: '#fed7aa',
+          border: '#f97316',
+          text: '#c2410c',
+          gradient: 'linear-gradient(90deg, #f97316, #c2410c)'
+        };
+      case "CLASS_III":
+        return {
+          background: '#fee2e2',
+          border: '#ef4444',
+          text: '#dc2626',
+          gradient: 'linear-gradient(90deg, #ef4444, #dc2626)'
+        };
+      default:
+        return {
+          background: '#f0fdf4',
+          border: '#22c55e',
+          text: '#15803d',
+          gradient: 'linear-gradient(90deg, #22c55e, #16a34a)'
+        };
+    }
+  }
+};
+
+export const CLASSIFICATION_DMDIV_THEME: PDFTheme = {
+  primaryColor: '#0891b2',
+  secondaryColor: '#0d9488',
+  icon: '🧪',
+  resultIcon: (isPositive) => {
+    // Pour la classification DMDIV, on utilise des icônes spécifiques par classe
+    return '🧪';
+  },
+  reportTitle: 'Rapport de Classification DMDIV',
+  reportSubtitle: 'Classification selon les règles 1-7 de l\'IVDR',
+  productLabel: 'Logiciel DMDIV',
+  regulationBadge: '🧪 IVDR 2017/746 • Règles 1-7',
+  footerText: 'Conforme aux règles de classification de l\'IVDR 2017/746',
+  getResultColors: (result) => {
+    switch (result.id) {
+      case "CLASS_A":
+        return {
+          background: '#f3f4f6',
+          border: '#6b7280',
+          text: '#374151',
+          gradient: 'linear-gradient(90deg, #6b7280, #4b5563)'
+        };
+      case "CLASS_B":
+        return {
+          background: '#dbeafe',
+          border: '#3b82f6',
+          text: '#1e40af',
+          gradient: 'linear-gradient(90deg, #3b82f6, #1e40af)'
+        };
+      case "CLASS_C":
+        return {
+          background: '#fed7aa',
+          border: '#f97316',
+          text: '#c2410c',
+          gradient: 'linear-gradient(90deg, #f97316, #c2410c)'
+        };
+      case "CLASS_D":
+        return {
+          background: '#fee2e2',
+          border: '#ef4444',
+          text: '#dc2626',
+          gradient: 'linear-gradient(90deg, #ef4444, #dc2626)'
+        };
+      default:
+        return {
+          background: '#ecfeff',
+          border: '#0891b2',
+          text: '#0e7490',
+          gradient: 'linear-gradient(90deg, #0891b2, #0e7490)'
+        };
+    }
+  }
+};
+
+export const CLASSIFICATION_SAFETY_THEME: PDFTheme = {
+  primaryColor: '#9333ea',
+  secondaryColor: '#8b5cf6',
+  icon: '🛡️',
+  resultIcon: (isPositive) => {
+    // Pour la classification de sécurité, on utilise des icônes spécifiques par classe
+    return '🛡️';
+  },
+  reportTitle: 'Rapport de Classification de Sécurité',
+  reportSubtitle: 'Classification selon la norme IEC 62304 §4.3',
+  productLabel: 'Logiciel médical',
+  regulationBadge: '🛡️ IEC 62304:2006+A1:2015 • §4.3',
+  footerText: 'Conforme à la norme IEC 62304 pour la classification de sécurité logicielle',
+  getResultColors: (result) => {
+    switch (result.id) {
+      case "SAFETY_CLASS_A":
+        return {
+          background: '#f3f4f6',
+          border: '#6b7280',
+          text: '#374151',
+          gradient: 'linear-gradient(90deg, #6b7280, #4b5563)'
+        };
+      case "SAFETY_CLASS_B":
+        return {
+          background: '#fed7aa',
+          border: '#f97316',
+          text: '#c2410c',
+          gradient: 'linear-gradient(90deg, #f97316, #c2410c)'
+        };
+      case "SAFETY_CLASS_C":
+        return {
+          background: '#fee2e2',
+          border: '#ef4444',
+          text: '#dc2626',
+          gradient: 'linear-gradient(90deg, #ef4444, #dc2626)'
+        };
+      default:
+        return {
+          background: '#f3e8ff',
+          border: '#9333ea',
+          text: '#6b21a8',
+          gradient: 'linear-gradient(90deg, #9333ea, #7c3aed)'
+        };
+    }
+  }
+};
+
 export class PDFGenerator {
   private stripHtml(html: string): string {
     return html.replace(/<[^>]+>/g, "").trim();
@@ -539,166 +694,3 @@ export class PDFGenerator {
     `;
   }
 }
-
-
-export const CLASSIFICATION_THEME: PDFTheme = {
-  primaryColor: '#059669',
-  secondaryColor: '#10b981',
-  icon: '📊',
-  resultIcon: (isPositive) => {
-    // Pour la classification, on utilise des icônes spécifiques par classe
-    return '📊';
-  },
-  reportTitle: 'Rapport de Classification',
-  reportSubtitle: 'Classification selon la règle 11 du MDR',
-  productLabel: 'Logiciel médical',
-  regulationBadge: '📊 MDR 2017/745 • MDCG 2019-11 rev.2.1 - Règle 11',
-  footerText: 'Conforme à la règle 11 du MDR 2017/745',
-  getResultColors: (result) => {
-    switch (result.id) {
-      case "CLASS_I":
-        return {
-          background: '#f3f4f6',
-          border: '#6b7280',
-          text: '#374151',
-          gradient: 'linear-gradient(90deg, #6b7280, #4b5563)'
-        };
-      case "CLASS_IIA":
-        return {
-          background: '#dbeafe',
-          border: '#3b82f6',
-          text: '#1e40af',
-          gradient: 'linear-gradient(90deg, #3b82f6, #1e40af)'
-        };
-      case "CLASS_IIB":
-        return {
-          background: '#fed7aa',
-          border: '#f97316',
-          text: '#c2410c',
-          gradient: 'linear-gradient(90deg, #f97316, #c2410c)'
-        };
-      case "CLASS_III":
-        return {
-          background: '#fee2e2',
-          border: '#ef4444',
-          text: '#dc2626',
-          gradient: 'linear-gradient(90deg, #ef4444, #dc2626)'
-        };
-      default:
-        return {
-          background: '#f0fdf4',
-          border: '#22c55e',
-          text: '#15803d',
-          gradient: 'linear-gradient(90deg, #22c55e, #16a34a)'
-        };
-    }
-  }
-};
-
-export const CLASSIFICATION_DM_THEME: PDFTheme = {
-  primaryColor: '#059669',
-  secondaryColor: '#10b981',
-  icon: '📊',
-  resultIcon: (isPositive) => {
-    // Pour la classification, on utilise des icônes spécifiques par classe
-    return '📊';
-  },
-  reportTitle: 'Rapport de Classification',
-  reportSubtitle: 'Classification selon la règle 11 du MDR',
-  productLabel: 'Logiciel médical',
-  regulationBadge: '📊 MDR 2017/745 • MDCG 2019-11 rev.2.1 - Règle 11',
-  footerText: 'Conforme à la règle 11 du MDR 2017/745',
-  getResultColors: (result) => {
-    switch (result.id) {
-      case "CLASS_I":
-        return {
-          background: '#f3f4f6',
-          border: '#6b7280',
-          text: '#374151',
-          gradient: 'linear-gradient(90deg, #6b7280, #4b5563)'
-        };
-      case "CLASS_IIA":
-        return {
-          background: '#dbeafe',
-          border: '#3b82f6',
-          text: '#1e40af',
-          gradient: 'linear-gradient(90deg, #3b82f6, #1e40af)'
-        };
-      case "CLASS_IIB":
-        return {
-          background: '#fed7aa',
-          border: '#f97316',
-          text: '#c2410c',
-          gradient: 'linear-gradient(90deg, #f97316, #c2410c)'
-        };
-      case "CLASS_III":
-        return {
-          background: '#fee2e2',
-          border: '#ef4444',
-          text: '#dc2626',
-          gradient: 'linear-gradient(90deg, #ef4444, #dc2626)'
-        };
-      default:
-        return {
-          background: '#f0fdf4',
-          border: '#22c55e',
-          text: '#15803d',
-          gradient: 'linear-gradient(90deg, #22c55e, #16a34a)'
-        };
-    }
-  }
-};
-
-export const CLASSIFICATION_DMDIV_THEME: PDFTheme = {
-  primaryColor: '#0891b2',
-  secondaryColor: '#0d9488',
-  icon: '🧪',
-  resultIcon: (isPositive) => {
-    // Pour la classification DMDIV, on utilise des icônes spécifiques par classe
-    return '🧪';
-  },
-  reportTitle: 'Rapport de Classification DMDIV',
-  reportSubtitle: 'Classification selon les règles 1-7 de l\'IVDR',
-  productLabel: 'Logiciel DMDIV',
-  regulationBadge: '🧪 IVDR 2017/746 • Règles 1-7',
-  footerText: 'Conforme aux règles de classification de l\'IVDR 2017/746',
-  getResultColors: (result) => {
-    switch (result.id) {
-      case "CLASS_A":
-        return {
-          background: '#f3f4f6',
-          border: '#6b7280',
-          text: '#374151',
-          gradient: 'linear-gradient(90deg, #6b7280, #4b5563)'
-        };
-      case "CLASS_B":
-        return {
-          background: '#dbeafe',
-          border: '#3b82f6',
-          text: '#1e40af',
-          gradient: 'linear-gradient(90deg, #3b82f6, #1e40af)'
-        };
-      case "CLASS_C":
-        return {
-          background: '#fed7aa',
-          border: '#f97316',
-          text: '#c2410c',
-          gradient: 'linear-gradient(90deg, #f97316, #c2410c)'
-        };
-      case "CLASS_D":
-        return {
-          background: '#fee2e2',
-          border: '#ef4444',
-          text: '#dc2626',
-          gradient: 'linear-gradient(90deg, #ef4444, #dc2626)'
-        };
-      default:
-        return {
-          background: '#ecfeff',
-          border: '#0891b2',
-          text: '#0e7490',
-          gradient: 'linear-gradient(90deg, #0891b2, #0e7490)'
-        };
-    }
-  }
-};

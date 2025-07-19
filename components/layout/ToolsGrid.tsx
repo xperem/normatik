@@ -153,11 +153,11 @@ export function ToolsGrid({ onToolSelect }: ToolsGridProps) {
       ]
     },
     {
-      id: "classification-62304",
+      id: "safetyClassification",
       title: "Classification de Sécurité (62304)",
       description: "Classifiez votre logiciel médical selon la norme IEC 62304",
       category: "Classification",
-      status: "coming-soon" as const,
+      status: "available" as const,
       icon: <Users className="w-6 h-6" />,
       features: [
         "Classes A, B et C",
