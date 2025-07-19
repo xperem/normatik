@@ -124,7 +124,7 @@ export function RegulatoryWizard() {
                 <Info className="h-4 w-4 text-blue-600" />
                 <AlertTitle className="text-blue-900">Contexte réglementaire</AlertTitle>
                 <AlertDescription className="text-blue-800">
-                  Cet outil utilise la Figure 2 du MDCG 2019-11 pour différencier les dispositifs relevant du MDR (dispositifs médicaux classiques) de ceux relevant de l'IVDR (dispositifs de diagnostic in vitro).
+                  Cet outil utilise la Figure 2 du MDCG 2019-11 pour différencier les dispositifs relevant du MDR (dispositifs médicaux classiques) de ceux relevant de l&apos;IVDR (dispositifs de diagnostic in vitro).
                 </AlertDescription>
               </Alert>
 
