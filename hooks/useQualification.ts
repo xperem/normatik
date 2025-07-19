@@ -1,7 +1,7 @@
 import { useState, useCallback } from "react";
 import { QualificationSession, QuestionId, ResultId } from "@/types/qualification";
 import { ToolAnswer } from "@/types/tool";
-import { qualificationConfig } from "@/lib/tools/qualification-config";
+import { qualificationConfig } from "@/lib/tools/qualification";
 import { generateReportId } from "@/lib/utils";
 
 export function useQualification() {
