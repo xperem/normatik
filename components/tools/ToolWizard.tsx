@@ -9,7 +9,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
-import { ToolReport } from "./ToolReport";
 import { BaseSession, BaseResult, BaseQuestion, ToolConfig } from "@/types/tool";
 
 export interface ToolWizardConfig {
@@ -43,11 +42,11 @@ interface ToolWizardProps<
     session: TSession | null;
     startSession: (productName: string, intendedUse: string) => TSession;
     getCurrentQuestion: () => TQuestion | null;
-    answerQuestion: (questionId: string, answer: "yes" | "no", justification?: string) => any;
+    answerQuestion: (questionId: string, answer: "yes" | "no", justification?: string) => unknown;
     resetSession: () => void;
     getProgress: () => number;
     canGoBack: () => boolean;
-    goBack: () => any;
+    goBack: () => unknown;
   };
   onShowReport: (session: TSession) => void;
 }
@@ -214,8 +213,8 @@ export function ToolWizard<
                     className={`
                       transition-all duration-200 font-medium
                       ${showHint 
-                        ? `bg-${wizardConfig.theme.primary} hover:bg-${wizardConfig.theme.primaryHover} text-white shadow-md` 
-                        : `border-${wizardConfig.theme.primary}-200 text-${wizardConfig.theme.primary}-700 hover:border-${wizardConfig.theme.primary}-300 hover:bg-${wizardConfig.theme.primary}-50`
+                        ? "bg-blue-600 hover:bg-blue-700 text-white shadow-md" 
+                        : "border-blue-200 text-blue-700 hover:border-blue-300 hover:bg-blue-50"
                       }
                     `}
                   >
@@ -230,21 +229,18 @@ export function ToolWizard<
               {/* Zone d'aide */}
               {showHint && currentQuestion.hint && (
                 <div className="animate-in slide-in-from-top-2 duration-300">
-                  <Alert className={`border-2 border-${wizardConfig.theme.primary}-200 bg-gradient-to-r from-${wizardConfig.theme.primary}-50 to-${wizardConfig.theme.accent}-50 shadow-sm`}>
+                  <Alert className="border-2 border-blue-200 bg-gradient-to-r from-blue-50 to-cyan-50 shadow-sm">
                     <div className="flex items-center mb-2">
-                      <div className={`flex-shrink-0 w-8 h-8 bg-${wizardConfig.theme.primary}-100 rounded-full flex items-center justify-center mr-3`}>
-                        <Info className={`h-4 w-4 text-${wizardConfig.theme.primary}-600`} />
+                      <div className="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                        <Info className="h-4 w-4 text-blue-600" />
                       </div>
-                      <AlertTitle className={`text-${wizardConfig.theme.primary}-900 font-semibold text-base`}>
+                      <AlertTitle className="text-blue-900 font-semibold text-base">
                         Aide à la décision
                       </AlertTitle>
                     </div>
-                    <AlertDescription className={`text-${wizardConfig.theme.primary}-800 leading-relaxed ml-11`}>
+                    <AlertDescription className="text-blue-800 leading-relaxed ml-11">
                       <div 
-                        className={`prose prose-sm max-w-none
-                          prose-strong:text-${wizardConfig.theme.primary}-900 prose-strong:font-semibold
-                          prose-ul:space-y-1 prose-li:text-${wizardConfig.theme.primary}-800
-                          prose-em:text-${wizardConfig.theme.primary}-700 prose-em:italic`}
+                        className="prose prose-sm max-w-none prose-strong:text-blue-900 prose-strong:font-semibold prose-ul:space-y-1 prose-li:text-blue-800 prose-em:text-blue-700 prose-em:italic"
                         dangerouslySetInnerHTML={{ __html: currentQuestion.hint }} 
                       />
                     </AlertDescription>
@@ -303,7 +299,7 @@ export function ToolWizard<
                     onChange={(e) => setJustification(e.target.value)}
                     placeholder="Expliquez votre réponse pour documenter votre évaluation..."
                     rows={3}
-                    className={`resize-none focus:ring-2 focus:ring-${wizardConfig.theme.primary}-500 focus:border-transparent`}
+                    className="resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
               </div>
@@ -343,7 +339,7 @@ export function ToolWizard<
               session.result.variant === "success" || session.result.id === "MEDICAL_DEVICE"
                 ? "bg-green-100 text-green-600" 
                 : session.result.variant === "info"
-                ? `bg-${wizardConfig.theme.primary}-100 text-${wizardConfig.theme.primary}-600`
+                ? "bg-blue-100 text-blue-600"
                 : "bg-red-100 text-red-600"
             }`}>
               {session.result.variant === "success" || session.result.id === "MEDICAL_DEVICE" ? (
