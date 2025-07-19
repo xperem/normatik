@@ -36,7 +36,7 @@ const reportConfig: ToolReportConfig = {
     accent: "cyan",
     gradient: "from-indigo-600 to-cyan-600"
   },
-  regulation: "MDR 2017/745 • IVDR 2017/746 • MDCG 2019-11 Figure 2",
+  regulation: "MDR 2017/745 • IVDR 2017/746 • MDCG 2019-11 2.1 Figure 2",
   toolVersion: "2.1",
   positiveResultIds: ["MDR", "IVDR"] // Les deux sont des résultats "positifs"
 };
