@@ -1,5 +1,3 @@
-// components/regulatory/RegulatoryReport.tsx
-
 "use client";
 
 import { useState } from "react";
@@ -10,24 +8,50 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { RegulatorySession, RegulatoryReport as RegulatoryReportType } from "@/types/regulatory";
+import { BaseSession, BaseResult } from "@/types/tool";
 import { formatDate, stripHtml } from "@/lib/utils";
-import { RegulatoryPDFGenerator } from "@/lib/pdf/regulatoryPDFGenerator";
+import { PDFGenerator, PDFTheme } from "@/lib/pdf/PDFGenerator";
 import { APP_NAME } from "@/lib/config";
 
-interface RegulatoryReportProps {
-  session: RegulatorySession;
+export interface ToolReportConfig {
+  productLabel: string;
+  theme: {
+    primary: string;
+    accent: string;
+    gradient: string;
+  };
+  regulation: string;
+  toolVersion: string;
+  positiveResultIds: string[];
+}
+
+interface ToolReportProps<
+  TResult extends BaseResult,
+  TSession extends BaseSession<TResult> = BaseSession<TResult>
+> {
+  session: TSession;
+  config: ToolReportConfig;
+  pdfTheme: PDFTheme;
   onBack: () => void;
 }
 
-export function RegulatoryReport({ session, onBack }: RegulatoryReportProps) {
+export function ToolReport<
+  TResult extends BaseResult,
+  TSession extends BaseSession<TResult> = BaseSession<TResult>
+>({
+  session,
+  config,
+  pdfTheme,
+  onBack
+}: ToolReportProps<TResult, TSession>) {
+  
   const [evaluatorName, setEvaluatorName] = useState("");
   const [evaluatorRole, setEvaluatorRole] = useState("");
   const [organization, setOrganization] = useState("");
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
 
-  const generateReport = (): RegulatoryReportType => {
-    const reportId = `QARA-REG-${Date.now().toString(36).toUpperCase()}`;
+  const generateReport = () => {
+    const reportId = `QARA-${session.id}`;
     
     return {
       reportId,
@@ -35,18 +59,16 @@ export function RegulatoryReport({ session, onBack }: RegulatoryReportProps) {
         productName: session.productName,
         intendedUse: session.intendedUse,
         generatedAt: new Date(),
-        toolVersion: "2.1",
-        regulation: "MDR 2017/745 • IVDR 2017/746",
+        toolVersion: config.toolVersion,
+        regulation: config.regulation,
       },
       questionnaire: {
-        totalQuestions: 3,
+        totalQuestions: session.steps.length,
         answeredQuestions: session.steps.length,
         steps: session.steps,
       },
       result: session.result!,
-      conclusion: session.result?.id === "MDR" 
-        ? `Le dispositif "${session.productName}" relève du règlement MDR 2017/745 (dispositifs médicaux).`
-        : `Le dispositif "${session.productName}" relève du règlement IVDR 2017/746 (dispositifs de diagnostic in vitro).`,
+      conclusion: `Le produit "${session.productName}" a été évalué selon ${config.regulation}.`,
       signature: {
         evaluatorName: evaluatorName.trim() || undefined,
         evaluatorRole: evaluatorRole.trim() || undefined,
@@ -65,7 +87,7 @@ export function RegulatoryReport({ session, onBack }: RegulatoryReportProps) {
       const url = URL.createObjectURL(dataBlob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `regulatory-${session.productName.replace(/[^a-zA-Z0-9]/g, '-')}-${report.reportId}.json`;
+      link.download = `report-${session.productName.replace(/[^a-zA-Z0-9]/g, '-')}-${report.reportId}.json`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -79,8 +101,8 @@ export function RegulatoryReport({ session, onBack }: RegulatoryReportProps) {
   const handleDownloadPDF = async () => {
     setIsGeneratingPDF(true);
     try {
-      const generator = new RegulatoryPDFGenerator();
-      await generator.generatePDF(session, {
+      const generator = new PDFGenerator();
+      await generator.generatePDF(session, pdfTheme, {
         evaluatorName: evaluatorName.trim() || undefined,
         evaluatorRole: evaluatorRole.trim() || undefined,
         organization: organization.trim() || undefined,
@@ -93,7 +115,7 @@ export function RegulatoryReport({ session, onBack }: RegulatoryReportProps) {
     }
   };
 
-  const isMDR = session.result?.id === "MDR";
+  const isPositiveResult = config.positiveResultIds.includes(session.result?.id || "");
 
   return (
     <motion.div
@@ -139,10 +161,10 @@ export function RegulatoryReport({ session, onBack }: RegulatoryReportProps) {
       </div>
 
       {/* Informations évaluateur */}
-      <Card className="shadow-lg border-0 bg-gradient-to-r from-indigo-50 to-cyan-50">
+      <Card className={`shadow-lg border-0 bg-gradient-to-r from-${config.theme.primary}-50 to-${config.theme.accent}-50`}>
         <CardHeader className="pb-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-indigo-500 rounded-lg">
+            <div className={`p-2 bg-${config.theme.primary}-500 rounded-lg`}>
               <User className="h-5 w-5 text-white" />
             </div>
             <div>
@@ -198,11 +220,11 @@ export function RegulatoryReport({ session, onBack }: RegulatoryReportProps) {
         <CardHeader className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-t-lg">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className={`p-3 rounded-full ${isMDR ? 'bg-indigo-100' : 'bg-cyan-100'}`}>
-                {isMDR ? (
-                  <FileText className="h-6 w-6 text-indigo-600" />
+              <div className={`p-3 rounded-full ${isPositiveResult ? 'bg-green-100' : 'bg-red-100'}`}>
+                {isPositiveResult ? (
+                  <CheckCircle2 className="h-6 w-6 text-green-600" />
                 ) : (
-                  <CheckCircle2 className="h-6 w-6 text-cyan-600" />
+                  <XCircle className="h-6 w-6 text-red-600" />
                 )}
               </div>
               <div>
@@ -214,10 +236,10 @@ export function RegulatoryReport({ session, onBack }: RegulatoryReportProps) {
               </div>
             </div>
             <Badge 
-              variant={isMDR ? "info" : "success"} 
+              variant={session.result?.variant} 
               className="text-sm sm:text-base px-3 sm:px-4 py-1 sm:py-2 font-medium self-start sm:self-center"
             >
-              {isMDR ? "MDR 2017/745" : "IVDR 2017/746"}
+              {stripHtml(session.result?.title || '')}
             </Badge>
           </div>
         </CardHeader>
@@ -225,8 +247,8 @@ export function RegulatoryReport({ session, onBack }: RegulatoryReportProps) {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="space-y-4">
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">Dispositif évalué</h3>
-                <p className="text-lg font-medium text-indigo-600 break-words">{session.productName}</p>
+                <h3 className="font-semibold text-gray-900 mb-2">{config.productLabel}</h3>
+                <p className={`text-lg font-medium text-${config.theme.primary}-600 break-words`}>{session.productName}</p>
               </div>
               <div>
                 <h3 className="font-semibold text-gray-900 mb-2">Usage prévu</h3>
@@ -246,18 +268,12 @@ export function RegulatoryReport({ session, onBack }: RegulatoryReportProps) {
                 </AlertDescription>
               </Alert>
               
-              <div className={`p-4 rounded-lg border-l-4 ${
-                isMDR ? 'bg-indigo-50 border-indigo-400' : 'bg-cyan-50 border-cyan-400'
-              }`}>
-                <h4 className={`font-medium mb-2 ${
-                  isMDR ? 'text-indigo-900' : 'text-cyan-900'
-                }`}>
+              <div className={`p-4 rounded-lg border-l-4 border-${config.theme.primary}-400 bg-${config.theme.primary}-50`}>
+                <h4 className={`font-medium mb-2 text-${config.theme.primary}-900`}>
                   Réglementation applicable
                 </h4>
-                <p className={`text-sm ${
-                  isMDR ? 'text-indigo-800' : 'text-cyan-800'
-                }`}>
-                  {isMDR ? 'MDR 2017/745 • MDCG 2019-11 Figure 2' : 'IVDR 2017/746 • MDCG 2019-11 Figure 2'}
+                <p className={`text-sm text-${config.theme.primary}-800`}>
+                  {config.regulation}
                 </p>
               </div>
             </div>
@@ -269,11 +285,11 @@ export function RegulatoryReport({ session, onBack }: RegulatoryReportProps) {
       <Card className="shadow-lg border-0">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <FileText className="h-5 w-5 text-indigo-600" />
+            <FileText className={`h-5 w-5 text-${config.theme.primary}-600`} />
             Détail de l&apos;évaluation
           </CardTitle>
           <CardDescription>
-            Questionnaire MDCG 2019-11 Figure 2 - {session.steps.length} questions répondues
+            {session.steps.length} questions répondues
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -282,7 +298,7 @@ export function RegulatoryReport({ session, onBack }: RegulatoryReportProps) {
               <div key={step.questionId} className="border-l-4 border-gray-200 pl-4 sm:pl-6 py-4">
                 <div className="flex items-start gap-3 sm:gap-4">
                   <div className="flex-shrink-0">
-                    <div className="w-8 h-8 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center text-sm font-semibold">
+                    <div className={`w-8 h-8 bg-${config.theme.primary}-100 text-${config.theme.primary}-600 rounded-full flex items-center justify-center text-sm font-semibold`}>
                       {index + 1}
                     </div>
                   </div>
@@ -321,10 +337,10 @@ export function RegulatoryReport({ session, onBack }: RegulatoryReportProps) {
       {/* Footer */}
       <div className="text-center py-6 border-t border-gray-200">
         <p className="text-sm text-gray-500">
-          Rapport généré par {APP_NAME} • Version 1 • {formatDate(new Date())}
+          Rapport généré par {APP_NAME} • Version {config.toolVersion} • {formatDate(new Date())}
         </p>
         <p className="text-xs text-gray-400 mt-1">
-          Conforme aux guidelines MDCG 2019-11 rev.1 - Figure 2
+          {config.regulation}
         </p>
       </div>
     </motion.div>

@@ -37,7 +37,7 @@ export const resultsData: Record<RegulatoryResultId, RegulatoryResult> = {
     ],
     references: [
       "MDR 2017/745 - Règlement dispositifs médicaux",
-      "MDCG 2019-11 rev.1 - Figure 2"
+      "MDCG 2019-11 rev.2.1 - Figure 2"
     ]
   },
   
@@ -75,7 +75,7 @@ export const resultsData: Record<RegulatoryResultId, RegulatoryResult> = {
     ],
     references: [
       "IVDR 2017/746 - Règlement dispositifs IVD",
-      "MDCG 2019-11 rev.1 - Figure 2"
+      "MDCG 2019-11 rev.2.1 - Figure 2"
     ]
   },
 };

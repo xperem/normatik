@@ -1,15 +1,79 @@
-import { QualificationSession } from "@/types/qualification";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
-import { APP_NAME } from "@/lib/config"; // ✅ import du nom centralisé
+import { APP_NAME } from "@/lib/config";
+import { BaseSession, BaseResult } from "@/types/tool";
 
-interface Signature {
+export interface Signature {
   evaluatorName?: string;
   evaluatorRole?: string;
   organization?: string;
 }
 
-export class QualificationPDFGenerator {
+export interface PDFTheme {
+  primaryColor: string;
+  secondaryColor: string;
+  icon: string;
+  resultIcon: (isPositive: boolean) => string;
+  reportTitle: string;
+  reportSubtitle: string;
+  productLabel: string;
+  regulationBadge: string;
+  footerText: string;
+  getResultColors: (result: BaseResult) => {
+    background: string;
+    border: string;
+    text: string;
+    gradient: string;
+  };
+}
+
+export const QUALIFICATION_THEME: PDFTheme = {
+  primaryColor: '#3b82f6',
+  secondaryColor: '#22c55e',
+  icon: '🏥',
+  resultIcon: (isPositive) => isPositive ? '✅' : '❌',
+  reportTitle: 'Rapport de Qualification',
+  reportSubtitle: 'Évaluation de dispositif médical logiciel',
+  productLabel: 'Nom du produit',
+  regulationBadge: '📜 MDR 2017/745 • MDCG 2019-11 v2.1',
+  footerText: 'Conforme aux guidelines MDCG 2019-11 rev.1',
+  getResultColors: (result) => result.id === "MEDICAL_DEVICE" ? {
+    background: '#f0fdf4',
+    border: '#22c55e',
+    text: '#15803d',
+    gradient: 'linear-gradient(90deg, #22c55e, #16a34a)'
+  } : {
+    background: '#fef2f2',
+    border: '#ef4444',
+    text: '#dc2626',
+    gradient: 'linear-gradient(90deg, #ef4444, #dc2626)'
+  }
+};
+
+export const REGULATORY_THEME: PDFTheme = {
+  primaryColor: '#4f46e5',
+  secondaryColor: '#0891b2',
+  icon: '📋',
+  resultIcon: (isPositive) => isPositive ? '📋' : '🧪',
+  reportTitle: 'Rapport de Qualification Réglementaire',
+  reportSubtitle: 'Évaluation MDR vs IVDR',
+  productLabel: 'Nom du dispositif',
+  regulationBadge: '📋 MDR 2017/745 • 🧪 IVDR 2017/746 • MDCG 2019-11 Figure 2',
+  footerText: 'Conforme aux guidelines MDCG 2019-11 rev.1 - Figure 2',
+  getResultColors: (result) => result.id === "MDR" ? {
+    background: '#eef2ff',
+    border: '#4f46e5',
+    text: '#3730a3',
+    gradient: 'linear-gradient(90deg, #4f46e5, #3730a3)'
+  } : {
+    background: '#ecfeff',
+    border: '#0891b2',
+    text: '#0e7490',
+    gradient: 'linear-gradient(90deg, #0891b2, #0e7490)'
+  }
+};
+
+export class PDFGenerator {
   private stripHtml(html: string): string {
     return html.replace(/<[^>]+>/g, "").trim();
   }
@@ -18,29 +82,35 @@ export class QualificationPDFGenerator {
     return format(date, "PPP", { locale: fr });
   }
 
-  async generatePDF(session: QualificationSession, signature: Signature) {
-    // Créer le contenu HTML moderne et professionnel
-    const htmlContent = this.generateHTMLContent(session, signature);
-    
-    // Téléchargement direct du fichier HTML
-    this.downloadHTMLAsPDF(htmlContent, session.productName);
+  async generatePDF<TSession extends BaseSession<BaseResult>>(
+    session: TSession,
+    theme: PDFTheme,
+    signature?: Signature
+  ) {
+    const htmlContent = this.generateHTMLContent(session, theme, signature);
+    this.downloadHTMLAsPDF(htmlContent, session.productName, theme.reportTitle);
   }
 
-  private downloadHTMLAsPDF(htmlContent: string, productName: string) {
+  private downloadHTMLAsPDF(htmlContent: string, productName: string, reportType: string) {
     const blob = new Blob([htmlContent], { type: 'text/html' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `qualification-${productName.replace(/[^a-zA-Z0-9]/g, '-')}.html`;
+    link.download = `${reportType.toLowerCase().replace(/\s+/g, '-')}-${productName.replace(/[^a-zA-Z0-9]/g, '-')}.html`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
   }
 
-  private generateHTMLContent(session: QualificationSession, signature: Signature): string {
-    const isQualified = session.result?.id === "MEDICAL_DEVICE";
-    const reportId = `QARA-QUAL-${Date.now().toString(36).toUpperCase()}`;
+  private generateHTMLContent<TSession extends BaseSession<BaseResult>>(
+    session: TSession,
+    theme: PDFTheme,
+    signature?: Signature
+  ): string {
+    const reportId = `QARA-${session.id}`;
+    const resultColors = theme.getResultColors(session.result!);
+    const isPositiveResult = session.result?.variant === "success" || session.result?.id === "MEDICAL_DEVICE";
     
     return `
 <!DOCTYPE html>
@@ -48,7 +118,7 @@ export class QualificationPDFGenerator {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rapport de Qualification - ${session.productName}</title>
+    <title>${theme.reportTitle} - ${session.productName}</title>
     <style>
         * {
             margin: 0;
@@ -75,7 +145,7 @@ export class QualificationPDFGenerator {
             text-align: center;
             margin-bottom: 40px;
             padding-bottom: 30px;
-            border-bottom: 3px solid #3b82f6;
+            border-bottom: 3px solid ${theme.primaryColor};
             position: relative;
         }
 
@@ -87,13 +157,13 @@ export class QualificationPDFGenerator {
             transform: translateX(-50%);
             width: 100px;
             height: 3px;
-            background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+            background: ${resultColors.gradient};
         }
 
         .logo {
             font-size: 28px;
             font-weight: 700;
-            color: #1e40af;
+            color: ${theme.primaryColor};
             margin-bottom: 10px;
         }
 
@@ -152,7 +222,7 @@ export class QualificationPDFGenerator {
             background: #f8fafc;
             padding: 15px;
             border-radius: 8px;
-            border-left: 4px solid #3b82f6;
+            border-left: 4px solid ${theme.primaryColor};
         }
 
         .info-label {
@@ -168,8 +238,8 @@ export class QualificationPDFGenerator {
         }
 
         .result-card {
-            background: ${isQualified ? '#f0fdf4' : '#fef2f2'};
-            border: 2px solid ${isQualified ? '#22c55e' : '#ef4444'};
+            background: ${resultColors.background};
+            border: 2px solid ${resultColors.border};
             border-radius: 12px;
             padding: 25px;
             margin-bottom: 25px;
@@ -184,13 +254,13 @@ export class QualificationPDFGenerator {
             left: 0;
             right: 0;
             height: 4px;
-            background: ${isQualified ? 'linear-gradient(90deg, #22c55e, #16a34a)' : 'linear-gradient(90deg, #ef4444, #dc2626)'};
+            background: ${resultColors.gradient};
         }
 
         .result-title {
             font-size: 20px;
             font-weight: 700;
-            color: ${isQualified ? '#15803d' : '#dc2626'};
+            color: ${resultColors.text};
             margin-bottom: 10px;
             display: flex;
             align-items: center;
@@ -220,7 +290,7 @@ export class QualificationPDFGenerator {
         }
 
         .question-number {
-            background: #3b82f6;
+            background: ${theme.primaryColor};
             color: white;
             width: 30px;
             height: 30px;
@@ -269,7 +339,7 @@ export class QualificationPDFGenerator {
             background: #f8fafc;
             padding: 15px;
             border-radius: 6px;
-            border-left: 3px solid #3b82f6;
+            border-left: 3px solid ${theme.primaryColor};
             margin-top: 10px;
         }
 
@@ -310,12 +380,12 @@ export class QualificationPDFGenerator {
 
         .footer-logo {
             font-weight: 600;
-            color: #3b82f6;
+            color: ${theme.primaryColor};
         }
 
         .regulation-badge {
-            background: #eff6ff;
-            color: #1d4ed8;
+            background: ${resultColors.background};
+            color: ${resultColors.text};
             padding: 8px 16px;
             border-radius: 20px;
             font-size: 12px;
@@ -349,9 +419,9 @@ export class QualificationPDFGenerator {
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <div class="logo">🏥 ${APP_NAME}</div>
-            <div class="report-title">Rapport de Qualification</div>
-            <div class="report-subtitle">Évaluation de dispositif médical logiciel</div>
+            <div class="logo">${theme.icon} ${APP_NAME}</div>
+            <div class="report-title">${theme.reportTitle}</div>
+            <div class="report-subtitle">${theme.reportSubtitle}</div>
             <div class="report-id">ID: ${reportId}</div>
         </div>
 
@@ -359,11 +429,11 @@ export class QualificationPDFGenerator {
         <div class="section">
             <div class="section-title">
                 <span class="section-icon">📋</span>
-                Informations du produit
+                Informations du ${theme.productLabel.toLowerCase()}
             </div>
             <div class="info-grid">
                 <div class="info-item">
-                    <div class="info-label">Nom du produit</div>
+                    <div class="info-label">${theme.productLabel}</div>
                     <div class="info-value">${session.productName}</div>
                 </div>
                 <div class="info-item">
@@ -375,7 +445,7 @@ export class QualificationPDFGenerator {
                 <div class="info-label">Usage prévu</div>
                 <div class="info-value">${session.intendedUse}</div>
             </div>
-            <div class="regulation-badge">📜 MDR 2017/745 • MDCG 2019-11 v2.1</div>
+            <div class="regulation-badge">${theme.regulationBadge}</div>
         </div>
 
         <!-- Résultat -->
@@ -386,7 +456,7 @@ export class QualificationPDFGenerator {
             </div>
             <div class="result-card">
                 <div class="result-title">
-                    <span>${isQualified ? '✅' : '❌'}</span>
+                    <span>${theme.resultIcon(isPositiveResult)}</span>
                     ${this.stripHtml(session.result?.title || '')}
                 </div>
                 <div class="result-description">
@@ -431,19 +501,19 @@ export class QualificationPDFGenerator {
             </div>
             <div class="signature-section">
                 <div class="signature-grid">
-                    ${signature.evaluatorName ? `
+                    ${signature?.evaluatorName ? `
                         <div class="signature-item">
                             <div class="info-label">Nom complet</div>
                             <div class="info-value">${signature.evaluatorName}</div>
                         </div>
                     ` : ''}
-                    ${signature.evaluatorRole ? `
+                    ${signature?.evaluatorRole ? `
                         <div class="signature-item">
                             <div class="info-label">Fonction</div>
                             <div class="info-value">${signature.evaluatorRole}</div>
                         </div>
                     ` : ''}
-                    ${signature.organization ? `
+                    ${signature?.organization ? `
                         <div class="signature-item">
                             <div class="info-label">Organisation</div>
                             <div class="info-value">${signature.organization}</div>
@@ -459,8 +529,8 @@ export class QualificationPDFGenerator {
 
         <!-- Footer -->
         <div class="footer">
-            <div className="footer-logo">${APP_NAME}</div>
-            <div>Version 1 • Conforme aux guidelines MDCG 2019-11 rev.1</div>
+            <div class="footer-logo">${APP_NAME}</div>
+            <div>Version 1 • ${theme.footerText}</div>
             <div>Généré le ${this.formatDate(new Date())}</div>
         </div>
     </div>
