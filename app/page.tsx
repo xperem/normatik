@@ -56,9 +56,9 @@ export default function HomePage() {
   const getToolVersion = () => {
     switch (selectedTool) {
       case "qualification":
-        return "MDCG 2019-11 v2.1";
+        return "MDCG 2019-11 rev.2.1";
       case "dm-dmdiv":
-        return "MDCG 2019-11 Figure 2";
+        return "MDCG 2019-11 rev.2.1 Figure 2";
       default:
         return "";
     }
