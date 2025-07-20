@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowRight, CheckCircle, FileText, BarChart3, Shield, Clock, Users } from "lucide-react";
+import { ArrowRight, CheckCircle, FileText, BarChart3, Shield, Clock, Users, Navigation } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -15,9 +15,10 @@ interface ToolCardProps {
   features: string[];
   onClick?: () => void;
   delay?: number;
+  isHighlighted?: boolean;
 }
 
-function ToolCard({ title, description, category, status, icon, features, onClick, delay = 0 }: ToolCardProps) {
+function ToolCard({ title, description, category, status, icon, features, onClick, delay = 0, isHighlighted = false }: ToolCardProps) {
   const isAvailable = status === "available";
 
   return (
@@ -31,12 +32,12 @@ function ToolCard({ title, description, category, status, icon, features, onClic
       <Card 
         className={`h-full glass-effect transition-all duration-300 hover:shadow-xl group ${
           isAvailable ? "cursor-pointer hover:border-blue-300" : "opacity-75"
-        }`}
+        } ${isHighlighted ? "ring-2 ring-blue-400 shadow-lg border-blue-300" : ""}`}
         onClick={isAvailable ? onClick : undefined}
       >
         <CardHeader className="pb-4">
           <div className="flex items-start justify-between mb-3">
-            <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center text-white">
+            <div className={`w-12 h-12 ${isHighlighted ? 'bg-gradient-to-br from-blue-600 to-cyan-600' : 'bg-gradient-to-br from-blue-500 to-cyan-500'} rounded-lg flex items-center justify-center text-white ${isHighlighted ? 'shadow-lg' : ''}`}>
               {icon}
             </div>
             <Badge 
@@ -48,13 +49,13 @@ function ToolCard({ title, description, category, status, icon, features, onClic
           </div>
           <CardTitle className={`text-xl mb-2 transition-colors ${
             isAvailable ? "group-hover:text-blue-600" : ""
-          }`}>
+          } ${isHighlighted ? "text-blue-700" : ""}`}>
             {title}
           </CardTitle>
           <CardDescription className="text-sm text-muted-foreground">
             {description}
           </CardDescription>
-          <Badge variant="outline" className="w-fit text-xs">
+          <Badge variant={isHighlighted ? "info" : "outline"} className="w-fit text-xs">
             {category}
           </Badge>
         </CardHeader>
@@ -75,7 +76,7 @@ function ToolCard({ title, description, category, status, icon, features, onClic
             
             <Button
               disabled={!isAvailable}
-              variant={isAvailable ? "default" : "secondary"}
+              variant={isAvailable ? (isHighlighted ? "medical" : "default") : "secondary"}
               className={`w-full mt-4 pointer-events-none ${
                 isAvailable ? "opacity-0 group-hover:opacity-100 transition-opacity" : ""
               }`}
@@ -96,6 +97,21 @@ interface ToolsGridProps {
 
 export function ToolsGrid({ onToolSelect }: ToolsGridProps) {
   const tools = [
+    {
+      id: "journey",
+      title: "🧭 Parcours Guidé Complet",
+      description: "Parcours automatisé de qualification complète de votre dispositif médical",
+      category: "Parcours",
+      status: "available" as const,
+      icon: <Navigation className="w-6 h-6" />,
+      features: [
+        "Qualification automatique",
+        "Classification intelligente",
+        "Rapport PDF consolidé",
+        "Recommandations personnalisées"
+      ],
+      isHighlighted: true
+    },
     {
       id: "qualification",
       title: "Qualification DM Logiciel",
@@ -211,6 +227,7 @@ export function ToolsGrid({ onToolSelect }: ToolsGridProps) {
               features={tool.features}
               onClick={() => onToolSelect(tool.id)}
               delay={index * 0.1}
+              isHighlighted={tool.isHighlighted}
             />
           ))}
         </div>

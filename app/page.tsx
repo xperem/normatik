@@ -12,6 +12,7 @@ import { RegulatoryWizard } from "@/components/regulatory/regulatoryWizard";
 import { ClassificationDmWizard } from "@/components/classificationDm/ClassificationDmWizard";
 import { ClassificationDmdivWizard } from "@/components/classificationDmdiv/ClassificationDmDivWizard";
 import { SafetyClassificationWizard } from "@/components/classificationSafety/ClassificationSafetyWizard";
+import { JourneyWizard } from "@/components/journey/JourneyWizard";
 import { APP_NAME } from "@/lib/config";
 
 export default function HomePage() {
@@ -27,6 +28,8 @@ export default function HomePage() {
 
   const renderSelectedTool = () => {
     switch (selectedTool) {
+      case "journey":
+        return <JourneyWizard onBack={handleBackToHome} />;
       case "qualification":
         return <QualificationWizard />;
       case "dm-dmdiv":
@@ -44,6 +47,11 @@ export default function HomePage() {
 
   const getToolTitle = () => {
     switch (selectedTool) {
+      case "journey":
+        return {
+          full: `Parcours Guidé - ${APP_NAME}`,
+          short: "Parcours Guidé"
+        };
       case "qualification":
         return {
           full: `Qualification - ${APP_NAME}`,
@@ -79,6 +87,8 @@ export default function HomePage() {
 
   const getToolVersion = () => {
     switch (selectedTool) {
+      case "journey":
+        return "Parcours Complet v1.0";
       case "qualification":
         return "MDCG 2019-11 rev.2.1";
       case "dm-dmdiv":
@@ -116,6 +126,18 @@ export default function HomePage() {
             <Header />
             <ToolsGrid onToolSelect={handleToolSelect} />
             <Footer />
+          </motion.div>
+        ) : selectedTool === "journey" ? (
+          // Le parcours guidé gère son propre header
+          <motion.div
+            key="journey"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+            className="min-h-screen"
+          >
+            {renderSelectedTool()}
           </motion.div>
         ) : (
           <motion.div

@@ -49,6 +49,7 @@ interface ToolWizardProps<
     goBack: () => unknown;
   };
   onShowReport: (session: TSession) => void;
+  hideInitialForm?: boolean; // Nouvelle prop pour masquer le formulaire initial
 }
 
 export function ToolWizard<
@@ -59,7 +60,8 @@ export function ToolWizard<
   config,
   wizardConfig,
   useTool,
-  onShowReport
+  onShowReport,
+  hideInitialForm = false // Valeur par défaut
 }: ToolWizardProps<TQuestion, TResult, TSession>) {
   
   const {
@@ -115,8 +117,8 @@ export function ToolWizard<
 
   return (
     <div className="max-w-4xl mx-auto p-4 md:p-6">
-      {/* Formulaire initial */}
-      {!session && (
+      {/* Formulaire initial - conditionnel */}
+      {!session && !hideInitialForm && (
         <Card className="shadow-lg">
           <CardHeader className="text-center">
             <CardTitle className={`text-2xl bg-gradient-to-r ${wizardConfig.theme.gradient} bg-clip-text text-transparent`}>
@@ -178,6 +180,27 @@ export function ToolWizard<
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </form>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Message d'attente si session non démarrée et formulaire caché */}
+      {!session && hideInitialForm && (
+        <Card className="shadow-lg">
+          <CardContent className="p-8 text-center">
+            <div className="space-y-4">
+              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto">
+                <FileText className="w-8 h-8 text-blue-600" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  Préparation de l'évaluation...
+                </h3>
+                <p className="text-gray-600">
+                  L'outil se prépare à démarrer l'évaluation avec les informations du parcours.
+                </p>
+              </div>
+            </div>
           </CardContent>
         </Card>
       )}
@@ -382,15 +405,29 @@ export function ToolWizard<
                 </Alert>
               )}
 
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Button onClick={handleExport} variant="medical" className="flex-1">
-                  <Download className="mr-2 h-4 w-4" />
-                  Exporter le rapport
-                </Button>
-                <Button onClick={handleRestart} variant="outline" className="flex-1">
-                  Nouvelle évaluation
-                </Button>
-              </div>
+              {/* Boutons d'action conditionnels */}
+              {!hideInitialForm && (
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <Button onClick={handleExport} variant="medical" className="flex-1">
+                    <Download className="mr-2 h-4 w-4" />
+                    Exporter le rapport
+                  </Button>
+                  <Button onClick={handleRestart} variant="outline" className="flex-1">
+                    Nouvelle évaluation
+                  </Button>
+                </div>
+              )}
+
+              {/* Message pour le parcours guidé */}
+              {hideInitialForm && (
+                <div className="text-center">
+                  <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                    <p className="text-blue-800 font-medium">
+                      ✅ Étape terminée ! Le parcours va continuer automatiquement...
+                    </p>
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
