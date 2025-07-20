@@ -197,7 +197,7 @@ export function ToolWizard<
                   Préparation de l&apos;évaluation...
                 </h3>
                 <p className="text-gray-600">
-                  L'outil se prépare à démarrer l'évaluation avec les informations du parcours.
+                  L&apos;outil se prépare à démarrer l&apos;évaluation avec les informations du parcours.
                 </p>
               </div>
             </div>
