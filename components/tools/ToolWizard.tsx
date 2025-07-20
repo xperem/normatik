@@ -194,7 +194,7 @@ export function ToolWizard<
               </div>
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  Préparation de l'évaluation...
+                  Préparation de l&apos;évaluation...
                 </h3>
                 <p className="text-gray-600">
                   L'outil se prépare à démarrer l'évaluation avec les informations du parcours.

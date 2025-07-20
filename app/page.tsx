@@ -12,7 +12,6 @@ import { RegulatoryWizard } from "@/components/regulatory/regulatoryWizard";
 import { ClassificationDmWizard } from "@/components/classificationDm/ClassificationDmWizard";
 import { ClassificationDmdivWizard } from "@/components/classificationDmdiv/ClassificationDmDivWizard";
 import { SafetyClassificationWizard } from "@/components/classificationSafety/ClassificationSafetyWizard";
-import { JourneyWizard } from "@/components/journey/JourneyWizard";
 import { APP_NAME } from "@/lib/config";
 
 export default function HomePage() {
@@ -28,8 +27,6 @@ export default function HomePage() {
 
   const renderSelectedTool = () => {
     switch (selectedTool) {
-      case "journey":
-        return <JourneyWizard onBack={handleBackToHome} />;
       case "qualification":
         return <QualificationWizard />;
       case "dm-dmdiv":

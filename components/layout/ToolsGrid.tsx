@@ -98,21 +98,6 @@ interface ToolsGridProps {
 export function ToolsGrid({ onToolSelect }: ToolsGridProps) {
   const tools = [
     {
-      id: "journey",
-      title: "🧭 Parcours Guidé Complet",
-      description: "Parcours automatisé de qualification complète de votre dispositif médical",
-      category: "Parcours",
-      status: "available" as const,
-      icon: <Navigation className="w-6 h-6" />,
-      features: [
-        "Qualification automatique",
-        "Classification intelligente",
-        "Rapport PDF consolidé",
-        "Recommandations personnalisées"
-      ],
-      isHighlighted: true
-    },
-    {
       id: "qualification",
       title: "Qualification DM Logiciel",
       description: "Déterminez si votre logiciel est un dispositif médical selon le MDCG 2019-11",
@@ -227,7 +212,7 @@ export function ToolsGrid({ onToolSelect }: ToolsGridProps) {
               features={tool.features}
               onClick={() => onToolSelect(tool.id)}
               delay={index * 0.1}
-              isHighlighted={tool.isHighlighted}
+              
             />
           ))}
         </div>
