@@ -2,7 +2,6 @@
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { APP_NAME } from "@/lib/config";
-import { JourneySession } from "@/types/journey";
 
 export interface JourneySignature {
   evaluatorName?: string;
@@ -19,76 +18,64 @@ export class JourneyPDFGenerator {
     return html.replace(/<[^>]+>/g, "").trim();
   }
 
-  private formatQuestionResponse(question: any, response: any): string {
-    if (!question || !response) return "";
+  private formatStepAnswer(answer: unknown): string {
+    const answerData = answer as { value?: string | boolean; justification?: string };
+    if (!answerData || answerData.value === undefined) return "Non répondu";
 
-    let formattedResponse = "";
-    
-    // Titre de la question
-    formattedResponse += `<div class="question-block">
-      <div class="question-title">❓ ${this.stripHtml(question.title)}</div>`;
-    
-    // Description si disponible
-    if (question.description) {
-      formattedResponse += `<div class="question-description">${this.stripHtml(question.description)}</div>`;
-    }
-
-    // Réponse selon le type
-    switch (question.type) {
-      case "boolean":
-        formattedResponse += `<div class="response-value">
-          <strong>Réponse :</strong> ${response.value ? "✅ Oui" : "❌ Non"}
-        </div>`;
-        break;
-        
-      case "single-choice":
-        const selectedOption = question.options?.find((opt: any) => opt.id === response.value);
-        formattedResponse += `<div class="response-value">
-          <strong>Réponse :</strong> ${selectedOption ? this.stripHtml(selectedOption.label) : response.value}
-        </div>`;
-        break;
-        
-      case "multiple-choice":
-        if (Array.isArray(response.value) && response.value.length > 0) {
-          const selectedOptions = question.options?.filter((opt: any) => 
-            response.value.includes(opt.id)
-          ) || [];
-          formattedResponse += `<div class="response-value">
-            <strong>Réponses sélectionnées :</strong>
-            <ul class="response-list">
-              ${selectedOptions.map((opt: any) => 
-                `<li>• ${this.stripHtml(opt.label)}</li>`
-              ).join("")}
-            </ul>
-          </div>`;
-        }
-        break;
-        
-      case "text":
-        formattedResponse += `<div class="response-value">
-          <strong>Réponse :</strong> ${this.stripHtml(response.value || "")}
-        </div>`;
-        break;
-        
+    switch (answerData.value) {
+      case "yes":
+      case true:
+        return "✅ Oui";
+      case "no":
+      case false:
+        return "❌ Non";
       default:
-        formattedResponse += `<div class="response-value">
-          <strong>Réponse :</strong> ${this.stripHtml(String(response.value || ""))}
-        </div>`;
+        return String(answerData.value);
     }
-
-    // Justification si disponible
-    if (response.justification && response.justification.trim()) {
-      formattedResponse += `<div class="response-justification">
-        <strong>Justification :</strong> ${this.stripHtml(response.justification)}
-      </div>`;
-    }
-
-    formattedResponse += `</div>`;
-    return formattedResponse;
   }
 
-  private generateSessionDetail(session: any, toolName: string, toolIcon: string): string {
-    if (!session) {
+  async generateJourneyPDF(
+    journeySession: unknown,
+    signature?: JourneySignature
+  ) {
+    const htmlContent = this.generateJourneyHTMLContent(journeySession, signature);
+    const sessionData = journeySession as { productName?: string };
+    this.downloadHTMLAsPDF(htmlContent, sessionData.productName || "rapport");
+  }
+
+  private downloadHTMLAsPDF(htmlContent: string, productName: string) {
+    const blob = new Blob([htmlContent], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `parcours-complet-${productName.replace(/[^a-zA-Z0-9]/g, '-')}.html`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }
+
+  private generateSessionDetail(session: unknown, toolName: string, toolIcon: string): string {
+    const sessionData = session as {
+      productName?: string;
+      intendedUse?: string;
+      completedAt?: string;
+      steps?: Array<{
+        questionId?: string;
+        questionText?: string;
+        answer?: {
+          value?: string | boolean;
+          timestamp?: string;
+          justification?: string;
+        };
+      }>;
+      result?: {
+        title?: string;
+        description?: string;
+      };
+    };
+
+    if (!sessionData) {
       return `<div class="tool-detail-section">
         <p>❌ Session non trouvée pour ${toolName}</p>
       </div>`;
@@ -105,18 +92,18 @@ export class JourneyPDFGenerator {
           <div class="summary-grid-detail">
             <div class="summary-item-detail">
               <div class="summary-label">Produit évalué</div>
-              <div class="summary-value">${session.productName || "Non spécifié"}</div>
+              <div class="summary-value">${sessionData.productName || "Non spécifié"}</div>
             </div>
             <div class="summary-item-detail">
               <div class="summary-label">Date d'évaluation</div>
-              <div class="summary-value">${session.completedAt ? this.formatDate(new Date(session.completedAt)) : "Non complété"}</div>
+              <div class="summary-value">${sessionData.completedAt ? this.formatDate(new Date(sessionData.completedAt)) : "Non complété"}</div>
             </div>
           </div>
           
-          ${session.intendedUse ? `
+          ${sessionData.intendedUse ? `
             <div class="intended-use-section">
               <div class="summary-label">Usage prévu</div>
-              <div class="intended-use-text">${this.stripHtml(session.intendedUse)}</div>
+              <div class="intended-use-text">${this.stripHtml(sessionData.intendedUse)}</div>
             </div>
           ` : ""}
         </div>
@@ -125,13 +112,13 @@ export class JourneyPDFGenerator {
           <h4 class="section-subtitle">📝 Questions et Réponses</h4>
           <div class="questions-container">`;
 
-    // Debug plus spécifique des steps
-    if (session.steps && Array.isArray(session.steps)) {
-      if (session.steps.length === 0) {
+    // Parcourir les steps qui contiennent les questions et réponses
+    if (sessionData.steps && Array.isArray(sessionData.steps)) {
+      if (sessionData.steps.length === 0) {
         detailHtml += `<div class="info-message">Aucune étape trouvée dans cette session.</div>`;
       } else {
         let questionsFound = 0;
-        session.steps.forEach((step: any, index: number) => {
+        sessionData.steps.forEach((step, index) => {
           // Structure réelle : { questionId, questionText, answer }
           if (step.questionId && step.questionText && step.answer) {
             questionsFound++;
@@ -154,7 +141,7 @@ export class JourneyPDFGenerator {
                 ` : ""}
                 
                 <div class="question-meta">
-                  <small class="text-gray-500">ID: ${step.questionId} • Répondu le ${new Date(step.answer.timestamp).toLocaleString('fr-FR')}</small>
+                  <small class="text-gray-500">ID: ${step.questionId} • Répondu le ${step.answer.timestamp ? new Date(step.answer.timestamp).toLocaleString('fr-FR') : 'Date inconnue'}</small>
                 </div>
               </div>`;
           }
@@ -175,9 +162,9 @@ export class JourneyPDFGenerator {
         <div class="tool-result-section">
           <h4 class="section-subtitle">🎯 Résultat Final</h4>
           <div class="final-result-card">
-            <div class="result-title">${this.stripHtml(session.result?.title || "Résultat non disponible")}</div>
-            ${session.result?.description ? `
-              <div class="result-description">${this.stripHtml(session.result.description)}</div>
+            <div class="result-title">${this.stripHtml(sessionData.result?.title || "Résultat non disponible")}</div>
+            ${sessionData.result?.description ? `
+              <div class="result-description">${this.stripHtml(sessionData.result.description)}</div>
             ` : ""}
           </div>
         </div>
@@ -186,53 +173,29 @@ export class JourneyPDFGenerator {
     return detailHtml;
   }
 
-  private formatStepAnswer(answer: any): string {
-    if (!answer || answer.value === undefined) return "Non répondu";
-
-    switch (answer.value) {
-      case "yes":
-      case true:
-        return "✅ Oui";
-      case "no":
-      case false:
-        return "❌ Non";
-      default:
-        return String(answer.value);
-    }
-  }
-
-  async generateJourneyPDF(
-    journeySession: JourneySession,
-    signature?: JourneySignature
-  ) {
-    const htmlContent = this.generateJourneyHTMLContent(journeySession, signature);
-    this.downloadHTMLAsPDF(htmlContent, journeySession.productName);
-  }
-
-  private downloadHTMLAsPDF(htmlContent: string, productName: string) {
-    const blob = new Blob([htmlContent], { type: 'text/html' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `parcours-complet-${productName.replace(/[^a-zA-Z0-9]/g, '-')}.html`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-  }
-
   private generateJourneyHTMLContent(
-    journeySession: JourneySession,
+    journeySession: unknown,
     signature?: JourneySignature
   ): string {
-    const reportId = `PARCOURS-${journeySession.id}`;
+    const sessionData = journeySession as {
+      id?: string;
+      productName?: string;
+      intendedUse?: string;
+      qualificationSession?: { result?: { id?: string; title?: string; description?: string } };
+      regulatorySession?: { result?: { id?: string; title?: string; description?: string } };
+      classificationDmSession?: { result?: { title?: string; description?: string } };
+      classificationDmdivSession?: { result?: { title?: string; description?: string } };
+      safetyClassificationSession?: { result?: { title?: string; description?: string } };
+    };
+    
+    const reportId = `PARCOURS-${sessionData.id}`;
     
     // Déterminer les résultats clés
-    const isQualified = journeySession.qualificationSession?.result?.id === "MEDICAL_DEVICE";
-    const regulatoryFramework = journeySession.regulatorySession?.result?.id;
-    const deviceClass = journeySession.classificationDmSession?.result?.title || 
-                       journeySession.classificationDmdivSession?.result?.title;
-    const safetyClass = journeySession.safetyClassificationSession?.result?.title;
+    const isQualified = sessionData.qualificationSession?.result?.id === "MEDICAL_DEVICE";
+    const regulatoryFramework = sessionData.regulatorySession?.result?.id;
+    const deviceClass = sessionData.classificationDmSession?.result?.title || 
+                       sessionData.classificationDmdivSession?.result?.title;
+    const safetyClass = sessionData.safetyClassificationSession?.result?.title;
 
     return `
 <!DOCTYPE html>
@@ -240,7 +203,7 @@ export class JourneyPDFGenerator {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Parcours Complet - ${journeySession.productName}</title>
+    <title>Parcours Complet - ${sessionData.productName}</title>
     <style>
         * {
             margin: 0;
@@ -391,7 +354,6 @@ export class JourneyPDFGenerator {
             background: linear-gradient(90deg, #3b82f6, #06b6d4);
         }
 
-        /* Styles pour le détail des outils */
         .tool-detail-section {
             background: #ffffff;
             border: 1px solid #e5e7eb;
@@ -486,11 +448,14 @@ export class JourneyPDFGenerator {
             margin-bottom: 8px;
         }
 
-        .question-description {
-            font-size: 14px;
-            color: #6b7280;
-            margin-bottom: 12px;
-            font-style: italic;
+        .question-content {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            margin-bottom: 15px;
+            color: #374151;
+            line-height: 1.6;
         }
 
         .response-value {
@@ -505,17 +470,6 @@ export class JourneyPDFGenerator {
             color: #1e40af;
         }
 
-        .response-list {
-            margin-top: 8px;
-            margin-left: 0;
-            list-style: none;
-        }
-
-        .response-list li {
-            color: #374151;
-            margin-bottom: 4px;
-        }
-
         .response-justification {
             background: #f0fdf4;
             padding: 12px;
@@ -526,6 +480,17 @@ export class JourneyPDFGenerator {
 
         .response-justification strong {
             color: #065f46;
+        }
+
+        .question-meta {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #f3f4f6;
+        }
+
+        .question-meta small {
+            color: #9ca3af;
+            font-size: 11px;
         }
 
         .tool-result-section {
@@ -552,45 +517,15 @@ export class JourneyPDFGenerator {
             font-size: 14px;
         }
 
-        .step-container {
-            background: #ffffff;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-
-        .step-header {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 15px;
-        }
-
-        .step-icon {
-            background: #3b82f6;
-            color: white;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-        }
-
-        .step-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: #1f2937;
-        }
-
-        .step-result {
-            background: #f0f9ff;
+        .info-message {
+            background: #e3f2fd;
+            border: 1px solid #2196f3;
             padding: 15px;
+            margin: 15px 0;
             border-radius: 8px;
-            border-left: 3px solid #3b82f6;
-            margin-top: 10px;
+            color: #1565c0;
+            text-align: center;
+            font-style: italic;
         }
 
         .recommendations-grid {
@@ -660,46 +595,9 @@ export class JourneyPDFGenerator {
             }
         }
 
-        .info-message {
-            background: #e3f2fd;
-            border: 1px solid #2196f3;
-            padding: 15px;
-            margin: 15px 0;
-            border-radius: 8px;
-            color: #1565c0;
-            text-align: center;
-            font-style: italic;
-        }
-
-        .debug-info {
-            background: #fff3cd;
-            border: 1px solid #ffeaa7;
-            padding: 15px;
-            margin: 15px 0;
-            border-radius: 8px;
-            font-size: 12px;
-            color: #856404;
-        }
-
-        .question-content {
-            background: #f8fafc;
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid #e5e7eb;
-            margin-bottom: 15px;
-            color: #374151;
-            line-height: 1.6;
-        }
-
-        .question-meta {
-            margin-top: 10px;
-            padding-top: 10px;
-            border-top: 1px solid #f3f4f6;
-        }
-
-        .question-meta small {
-            color: #9ca3af;
-            font-size: 11px;
+        @page {
+            size: A4;
+            margin: 15mm;
         }
     </style>
 </head>
@@ -722,10 +620,10 @@ export class JourneyPDFGenerator {
             
             <div class="result-card">
                 <h3 style="font-size: 20px; font-weight: 700; color: #1e40af; margin-bottom: 15px;">
-                    ${journeySession.productName}
+                    ${sessionData.productName}
                 </h3>
                 <p style="color: #374151; margin-bottom: 20px;">
-                    ${journeySession.intendedUse}
+                    ${sessionData.intendedUse}
                 </p>
                 
                 <div class="summary-grid">
@@ -767,37 +665,37 @@ export class JourneyPDFGenerator {
                 Détail Complet du Parcours
             </div>
             
-            ${journeySession.qualificationSession ? 
+            ${sessionData.qualificationSession ? 
               this.generateSessionDetail(
-                journeySession.qualificationSession, 
+                sessionData.qualificationSession, 
                 "Qualification Dispositif Médical", 
                 "🏥"
               ) : ''}
 
-            ${journeySession.regulatorySession ? 
+            ${sessionData.regulatorySession ? 
               this.generateSessionDetail(
-                journeySession.regulatorySession, 
+                sessionData.regulatorySession, 
                 "Qualification Réglementaire", 
                 "📋"
               ) : ''}
 
-            ${journeySession.classificationDmSession ? 
+            ${sessionData.classificationDmSession ? 
               this.generateSessionDetail(
-                journeySession.classificationDmSession, 
+                sessionData.classificationDmSession, 
                 "Classification DM (MDR)", 
                 "📊"
               ) : ''}
 
-            ${journeySession.classificationDmdivSession ? 
+            ${sessionData.classificationDmdivSession ? 
               this.generateSessionDetail(
-                journeySession.classificationDmdivSession, 
+                sessionData.classificationDmdivSession, 
                 "Classification DMDIV (IVDR)", 
                 "🧪"
               ) : ''}
 
-            ${journeySession.safetyClassificationSession ? 
+            ${sessionData.safetyClassificationSession ? 
               this.generateSessionDetail(
-                journeySession.safetyClassificationSession, 
+                sessionData.safetyClassificationSession, 
                 "Classification Sécurité (IEC 62304)", 
                 "🛡️"
               ) : ''}

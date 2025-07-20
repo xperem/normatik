@@ -42,8 +42,8 @@ export function JourneyWizard({ onBack }: JourneyWizardProps) {
   const [showContinueButton, setShowContinueButton] = useState(false);
   const [lastCompletedStep, setLastCompletedStep] = useState<{
     stepId: JourneyStepType;
-    session: any;
-    result: any;
+    session: unknown;
+    result: unknown;
   } | null>(null);
 
   const {
@@ -71,8 +71,9 @@ export function JourneyWizard({ onBack }: JourneyWizardProps) {
     }
   };
 
-  const handleStepComplete = (stepId: JourneyStepType, session: any, result: any) => {
-    completeStep(stepId, session, result);
+  const handleStepComplete = (stepId: JourneyStepType, session: unknown, result: unknown) => {
+    // Type assertion sécurisée pour completeStep
+    completeStep(stepId, session as never, result as never);
     
     // Stocker les informations de l'étape terminée
     setLastCompletedStep({ stepId, session, result });
@@ -86,12 +87,13 @@ export function JourneyWizard({ onBack }: JourneyWizardProps) {
     }
   };
 
-  const determineHasNextStep = (stepId: JourneyStepType, result: any): boolean => {
+  const determineHasNextStep = (stepId: JourneyStepType, result: unknown): boolean => {
+    const resultWithId = result as { id?: string };
     switch (stepId) {
       case "qualification":
-        return result?.id === "MEDICAL_DEVICE";
+        return resultWithId?.id === "MEDICAL_DEVICE";
       case "regulatory":
-        return result?.id === "MDR" || result?.id === "IVDR";
+        return resultWithId?.id === "MDR" || resultWithId?.id === "IVDR";
       case "classificationDm":
       case "classificationDmdiv":
         return true; // Toujours aller vers safety classification
@@ -106,18 +108,32 @@ export function JourneyWizard({ onBack }: JourneyWizardProps) {
     if (!lastCompletedStep || !journeySession) return;
     
     const { stepId, result } = lastCompletedStep;
+    const resultWithId = result as { id?: string };
+    const journeyData = journeySession as { productName?: string; intendedUse?: string };
     
     // Déterminer et démarrer la prochaine étape
-    if (stepId === "qualification" && result?.id === "MEDICAL_DEVICE") {
-      regulatoryTool.startSession(journeySession.productName, journeySession.intendedUse);
+    if (stepId === "qualification" && resultWithId?.id === "MEDICAL_DEVICE") {
+      (regulatoryTool as { startSession?: (name: string, use: string) => void }).startSession?.(
+        journeyData.productName || "", 
+        journeyData.intendedUse || ""
+      );
     } else if (stepId === "regulatory") {
-      if (result?.id === "MDR") {
-        classificationDmTool.startSession(journeySession.productName, journeySession.intendedUse);
-      } else if (result?.id === "IVDR") {
-        classificationDmdivTool.startSession(journeySession.productName, journeySession.intendedUse);
+      if (resultWithId?.id === "MDR") {
+        (classificationDmTool as { startSession?: (name: string, use: string) => void }).startSession?.(
+          journeyData.productName || "", 
+          journeyData.intendedUse || ""
+        );
+      } else if (resultWithId?.id === "IVDR") {
+        (classificationDmdivTool as { startSession?: (name: string, use: string) => void }).startSession?.(
+          journeyData.productName || "", 
+          journeyData.intendedUse || ""
+        );
       }
     } else if ((stepId === "classificationDm" || stepId === "classificationDmdiv") && result) {
-      safetyClassificationTool.startSession(journeySession.productName, journeySession.intendedUse);
+      (safetyClassificationTool as { startSession?: (name: string, use: string) => void }).startSession?.(
+        journeyData.productName || "", 
+        journeyData.intendedUse || ""
+      );
     }
     
     // Cacher le bouton continuer
@@ -146,14 +162,15 @@ export function JourneyWizard({ onBack }: JourneyWizardProps) {
 
     // Vérifier si l'outil actuel est terminé et afficher le bouton continuer
     const currentTool = getCurrentTool(currentStep);
-    if (currentTool?.session?.status === "completed" && 
-        currentTool?.session?.result && 
+    const toolWithSession = currentTool as { session?: { status?: string; result?: unknown } };
+    if (toolWithSession?.session?.status === "completed" && 
+        toolWithSession?.session?.result && 
         !showContinueButton &&
-        currentTool.session && 
-        currentTool.session.result) {
+        toolWithSession.session && 
+        toolWithSession.session.result) {
       // Déclencher l'affichage du bouton automatiquement
       setTimeout(() => {
-        handleStepComplete(currentStep, currentTool.session!, currentTool.session!.result);
+        handleStepComplete(currentStep, toolWithSession.session!, toolWithSession.session!.result);
       }, 100);
     }
 
@@ -235,13 +252,13 @@ export function JourneyWizard({ onBack }: JourneyWizardProps) {
                     <div className="w-4 h-4 bg-emerald-500 rounded-full mt-2 flex-shrink-0 shadow-lg" />
                     <div className="flex-1 space-y-4">
                       <h3 className="text-2xl font-bold text-emerald-900 leading-relaxed">
-                        {lastCompletedStep.result?.title}
+                        {(lastCompletedStep.result as { title?: string })?.title}
                       </h3>
-                      {lastCompletedStep.result?.description && (
+                      {(lastCompletedStep.result as { description?: string })?.description && (
                         <div 
                           className="text-slate-700 text-lg leading-relaxed prose prose-lg max-w-none"
                           dangerouslySetInnerHTML={{ 
-                            __html: lastCompletedStep.result.description 
+                            __html: (lastCompletedStep.result as { description: string }).description 
                           }}
                         />
                       )}
@@ -299,7 +316,7 @@ export function JourneyWizard({ onBack }: JourneyWizardProps) {
         return (
           <QualificationStepWrapper
             tool={qualificationTool}
-            onComplete={(session: any, result: any) => handleStepComplete("qualification", session, result)}
+            onComplete={(session: unknown, result: unknown) => handleStepComplete("qualification", session, result)}
             productName={journeySession.productName}
             intendedUse={journeySession.intendedUse}
           />
@@ -308,7 +325,7 @@ export function JourneyWizard({ onBack }: JourneyWizardProps) {
         return (
           <RegulatoryStepWrapper
             tool={regulatoryTool}
-            onComplete={(session: any, result: any) => handleStepComplete("regulatory", session, result)}
+            onComplete={(session: unknown, result: unknown) => handleStepComplete("regulatory", session, result)}
             productName={journeySession.productName}
             intendedUse={journeySession.intendedUse}
           />
@@ -317,7 +334,7 @@ export function JourneyWizard({ onBack }: JourneyWizardProps) {
         return (
           <ClassificationDmStepWrapper
             tool={classificationDmTool}
-            onComplete={(session: any, result: any) => handleStepComplete("classificationDm", session, result)}
+            onComplete={(session: unknown, result: unknown) => handleStepComplete("classificationDm", session, result)}
             productName={journeySession.productName}
             intendedUse={journeySession.intendedUse}
           />
@@ -326,7 +343,7 @@ export function JourneyWizard({ onBack }: JourneyWizardProps) {
         return (
           <ClassificationDmdivStepWrapper
             tool={classificationDmdivTool}
-            onComplete={(session: any, result: any) => handleStepComplete("classificationDmdiv", session, result)}
+            onComplete={(session: unknown, result: unknown) => handleStepComplete("classificationDmdiv", session, result)}
             productName={journeySession.productName}
             intendedUse={journeySession.intendedUse}
           />
@@ -335,7 +352,7 @@ export function JourneyWizard({ onBack }: JourneyWizardProps) {
         return (
           <SafetyClassificationStepWrapper
             tool={safetyClassificationTool}
-            onComplete={(session: any, result: any) => handleStepComplete("safetyClassification", session, result)}
+            onComplete={(session: unknown, result: unknown) => handleStepComplete("safetyClassification", session, result)}
             productName={journeySession.productName}
             intendedUse={journeySession.intendedUse}
           />
@@ -547,14 +564,15 @@ export function JourneyWizard({ onBack }: JourneyWizardProps) {
   );
 }
 
-function JourneyFinalReport({ journeySession }: { journeySession: any }) {
+function JourneyFinalReport({ journeySession }: { journeySession: unknown }) {
   const [evaluatorName, setEvaluatorName] = useState("");
   const [evaluatorRole, setEvaluatorRole] = useState("");
   const [organization, setOrganization] = useState("");
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
 
   const handleGeneratePDF = async () => {
-    if (!journeySession) return;
+    const sessionData = journeySession as { productName?: string };
+    if (!sessionData) return;
     
     setIsGeneratingPDF(true);
     try {
@@ -573,30 +591,40 @@ function JourneyFinalReport({ journeySession }: { journeySession: any }) {
   };
 
   const handleDownloadJSON = () => {
-    if (!journeySession) return;
-    
+    const sessionData = journeySession as { 
+      id?: string; 
+      productName?: string; 
+      intendedUse?: string;
+      steps?: Record<string, unknown>;
+      qualificationSession?: { result?: unknown };
+      regulatorySession?: { result?: unknown };
+      classificationDmSession?: { result?: unknown };
+      classificationDmdivSession?: { result?: unknown };
+      safetyClassificationSession?: { result?: unknown };
+    };
+    if (!sessionData) return;    
     try {
       const journeyData = {
-        reportId: `PARCOURS-${journeySession.id}`,
-        productName: journeySession.productName,
-        intendedUse: journeySession.intendedUse,
+        reportId: `PARCOURS-${sessionData.id}`,
+        productName: sessionData.productName,
+        intendedUse: sessionData.intendedUse,
         generatedAt: new Date(),
-        completedSteps: Object.entries(journeySession.steps)
-          .filter(([_, step]: [string, any]) => step.status === "completed")
-          .map(([key, _]: [string, any]) => key),
+        completedSteps: Object.entries(sessionData.steps || {})
+          .filter(([, step]: [string, unknown]) => (step as { status?: string })?.status === "completed")
+          .map(([key]: [string, unknown]) => key),
         results: {
-          qualification: journeySession.qualificationSession?.result,
-          regulatory: journeySession.regulatorySession?.result,
-          classificationDm: journeySession.classificationDmSession?.result,
-          classificationDmdiv: journeySession.classificationDmdivSession?.result,
-          safetyClassification: journeySession.safetyClassificationSession?.result,
+          qualification: sessionData.qualificationSession?.result,
+          regulatory: sessionData.regulatorySession?.result,
+          classificationDm: sessionData.classificationDmSession?.result,
+          classificationDmdiv: sessionData.classificationDmdivSession?.result,
+          safetyClassification: sessionData.safetyClassificationSession?.result,
         },
         sessions: {
-          qualification: journeySession.qualificationSession,
-          regulatory: journeySession.regulatorySession,
-          classificationDm: journeySession.classificationDmSession,
-          classificationDmdiv: journeySession.classificationDmdivSession,
-          safetyClassification: journeySession.safetyClassificationSession,
+          qualification: sessionData.qualificationSession,
+          regulatory: sessionData.regulatorySession,
+          classificationDm: sessionData.classificationDmSession,
+          classificationDmdiv: sessionData.classificationDmdivSession,
+          safetyClassification: sessionData.safetyClassificationSession,
         },
         signature: {
           evaluatorName: evaluatorName.trim() || undefined,
@@ -612,7 +640,7 @@ function JourneyFinalReport({ journeySession }: { journeySession: any }) {
       const url = URL.createObjectURL(dataBlob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `parcours-${journeySession.productName.replace(/[^a-zA-Z0-9]/g, '-')}-${journeyData.reportId}.json`;
+      link.download = `parcours-${sessionData.productName?.replace(/[^a-zA-Z0-9]/g, '-')}-${journeyData.reportId}.json`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -621,6 +649,15 @@ function JourneyFinalReport({ journeySession }: { journeySession: any }) {
       console.error('Erreur lors de la génération du JSON:', error);
       alert('Erreur lors de la génération du fichier JSON. Veuillez réessayer.');
     }
+  };
+
+  const sessionData = journeySession as { 
+    productName?: string;
+    qualificationSession?: { result?: { id?: string; title?: string } };
+    regulatorySession?: { result?: { id?: string; title?: string } };
+    classificationDmSession?: { result?: { title?: string } };
+    classificationDmdivSession?: { result?: { title?: string } };
+    safetyClassificationSession?: { result?: { title?: string } };
   };
 
   return (
@@ -694,16 +731,16 @@ function JourneyFinalReport({ journeySession }: { journeySession: any }) {
       <Card>
         <CardContent className="p-6">
           <h2 className="text-xl font-semibold mb-4">
-            Résultats pour : {journeySession.productName}
+            Résultats pour : {sessionData?.productName}
           </h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Résultats de qualification */}
-            {journeySession.qualificationSession?.result && (
+            {sessionData?.qualificationSession?.result && (
               <div className="bg-blue-50 p-4 rounded-lg">
                 <h3 className="font-medium text-blue-900 mb-2">Qualification</h3>
                 <Badge variant="success" className="mb-2">
-                  {journeySession.qualificationSession.result.title}
+                  {sessionData.qualificationSession.result.title}
                 </Badge>
                 <p className="text-sm text-blue-800">
                   Votre produit est qualifié comme dispositif médical
@@ -712,14 +749,14 @@ function JourneyFinalReport({ journeySession }: { journeySession: any }) {
             )}
 
             {/* Résultats réglementaires */}
-            {journeySession.regulatorySession?.result && (
+            {sessionData?.regulatorySession?.result && (
               <div className="bg-indigo-50 p-4 rounded-lg">
                 <h3 className="font-medium text-indigo-900 mb-2">Réglementation</h3>
                 <Badge variant="info" className="mb-2">
-                  {journeySession.regulatorySession.result.title}
+                  {sessionData.regulatorySession.result.title}
                 </Badge>
                 <p className="text-sm text-indigo-800">
-                  {journeySession.regulatorySession.result.id === "MDR" 
+                  {sessionData.regulatorySession.result.id === "MDR" 
                     ? "Relève du règlement MDR 2017/745"
                     : "Relève du règlement IVDR 2017/746"
                   }
@@ -728,11 +765,11 @@ function JourneyFinalReport({ journeySession }: { journeySession: any }) {
             )}
 
             {/* Classification DM */}
-            {journeySession.classificationDmSession?.result && (
+            {sessionData?.classificationDmSession?.result && (
               <div className="bg-green-50 p-4 rounded-lg">
                 <h3 className="font-medium text-green-900 mb-2">Classification DM</h3>
                 <Badge variant="warning" className="mb-2">
-                  {journeySession.classificationDmSession.result.title}
+                  {sessionData.classificationDmSession.result.title}
                 </Badge>
                 <p className="text-sm text-green-800">
                   Classification selon la règle 11 du MDR
@@ -741,11 +778,11 @@ function JourneyFinalReport({ journeySession }: { journeySession: any }) {
             )}
 
             {/* Classification DMDIV */}
-            {journeySession.classificationDmdivSession?.result && (
+            {sessionData?.classificationDmdivSession?.result && (
               <div className="bg-cyan-50 p-4 rounded-lg">
                 <h3 className="font-medium text-cyan-900 mb-2">Classification DMDIV</h3>
                 <Badge variant="warning" className="mb-2">
-                  {journeySession.classificationDmdivSession.result.title}
+                  {sessionData.classificationDmdivSession.result.title}
                 </Badge>
                 <p className="text-sm text-cyan-800">
                   Classification selon les règles IVDR
@@ -754,11 +791,11 @@ function JourneyFinalReport({ journeySession }: { journeySession: any }) {
             )}
 
             {/* Classification sécurité */}
-            {journeySession.safetyClassificationSession?.result && (
+            {sessionData?.safetyClassificationSession?.result && (
               <div className="bg-purple-50 p-4 rounded-lg">
                 <h3 className="font-medium text-purple-900 mb-2">Classification Sécurité</h3>
                 <Badge variant="destructive" className="mb-2">
-                  {journeySession.safetyClassificationSession.result.title}
+                  {sessionData.safetyClassificationSession.result.title}
                 </Badge>
                 <p className="text-sm text-purple-800">
                   Classification selon IEC 62304 §4.3
@@ -772,30 +809,30 @@ function JourneyFinalReport({ journeySession }: { journeySession: any }) {
             <h3 className="text-lg font-semibold text-blue-900 mb-4">📋 Résumé Exécutif</h3>
             <div className="space-y-2 text-blue-800">
               <p>
-                <strong>Produit :</strong> {journeySession.productName}
+                <strong>Produit :</strong> {sessionData?.productName}
               </p>
               <p>
                 <strong>Statut réglementaire :</strong> 
-                {journeySession.qualificationSession?.result?.id === "MEDICAL_DEVICE" 
+                {sessionData?.qualificationSession?.result?.id === "MEDICAL_DEVICE" 
                   ? " Dispositif médical qualifié"
                   : " Non-dispositif médical"
                 }
               </p>
-              {journeySession.regulatorySession?.result && (
+              {sessionData?.regulatorySession?.result && (
                 <p>
-                  <strong>Réglementation applicable :</strong> {journeySession.regulatorySession.result.id}
+                  <strong>Réglementation applicable :</strong> {sessionData.regulatorySession.result.id}
                 </p>
               )}
-              {(journeySession.classificationDmSession?.result || journeySession.classificationDmdivSession?.result) && (
+              {(sessionData?.classificationDmSession?.result || sessionData?.classificationDmdivSession?.result) && (
                 <p>
                   <strong>Classe de risque :</strong> 
-                  {journeySession.classificationDmSession?.result?.title || 
-                   journeySession.classificationDmdivSession?.result?.title}
+                  {sessionData.classificationDmSession?.result?.title || 
+                   sessionData.classificationDmdivSession?.result?.title}
                 </p>
               )}
-              {journeySession.safetyClassificationSession?.result && (
+              {sessionData?.safetyClassificationSession?.result && (
                 <p>
-                  <strong>Classe de sécurité logicielle :</strong> {journeySession.safetyClassificationSession.result.title}
+                  <strong>Classe de sécurité logicielle :</strong> {sessionData.safetyClassificationSession.result.title}
                 </p>
               )}
             </div>
